@@ -2,8 +2,10 @@ package com.uzuu.customer.data.mapper
 
 import com.uzuu.customer.data.remote.dto.request.LoginRequestDto
 import com.uzuu.customer.data.remote.dto.request.RegisterRequestDto
+import com.uzuu.customer.data.remote.dto.request.ForgotPasswordRequestDto
 import com.uzuu.customer.domain.model.Login
 import com.uzuu.customer.domain.model.Register
+import com.uzuu.customer.domain.model.ForgotPassword
 
 
 fun Register.registerDomainToDto() : RegisterRequestDto {
@@ -39,5 +41,13 @@ fun Login.loginDomainToDto() : LoginRequestDto {
     return LoginRequestDto(
         username = username,
         password = password
+    )
+}
+
+fun ForgotPassword.forgotPasswordDomainToDto(): ForgotPasswordRequestDto {
+    return ForgotPasswordRequestDto(
+        email = email,
+        otp = otp,
+        newPassword = newPassword
     )
 }
