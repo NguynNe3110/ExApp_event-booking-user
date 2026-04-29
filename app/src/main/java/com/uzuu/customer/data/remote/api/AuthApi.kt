@@ -1,8 +1,10 @@
 package com.uzuu.customer.data.remote.api
 
 import com.uzuu.customer.data.remote.dto.BaseResponseDto
+import com.uzuu.customer.data.remote.dto.request.ForgotPasswordRequestDto
 import com.uzuu.customer.data.remote.dto.request.LoginRequestDto
 import com.uzuu.customer.data.remote.dto.request.RegisterRequestDto
+import com.uzuu.customer.data.remote.dto.request.ResetPasswordRequestDto
 import com.uzuu.customer.data.remote.dto.response.TokenResponseDto
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -25,6 +27,16 @@ interface AuthApi {
     @GET("auth/verify")
     suspend fun verifyEmail(
         @Query("token") token: String
+    ): BaseResponseDto<String>
+
+    @POST("auth/forgot-password")
+    suspend fun forgotPassword(
+        @Body request: ForgotPasswordRequestDto
+    ): BaseResponseDto<String>
+
+    @POST("auth/reset-password")
+    suspend fun resetPassword(
+        @Body request: ResetPasswordRequestDto
     ): BaseResponseDto<String>
 
 }
