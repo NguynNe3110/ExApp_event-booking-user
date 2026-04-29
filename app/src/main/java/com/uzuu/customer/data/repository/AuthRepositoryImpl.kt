@@ -30,4 +30,24 @@ class AuthRepositoryImpl(
 
             remote.login(request.loginDomainToDto())
         }
+
+    override suspend fun forgotPassword(email: String): ApiResult<String> =
+        safeApiCall {
+            val response = remote.forgotPassword(email)
+            if (response.code == 200 || response.code == 0 || response.code == 1000) {
+                response.result ?: "Mã xác thực đã được gửi tới email của bạn"
+            } else {
+                throw Exception(response.message ?: "Gửi mã xác thực thất bại")
+            }
+        }
+
+    override suspend fun resetPassword(otp: String, newPassword: String): ApiResult<String> =
+        safeApiCall {
+            val response = remote.resetPassword(otp, newPassword)
+            if (response.code == 200 || response.code == 0 || response.code == 1000) {
+                response.result ?: "Đặt lại mật khẩu thành công"
+            } else {
+                throw Exception(response.message ?: "Đặt lại mật khẩu thất bại")
+            }
+        }
 }

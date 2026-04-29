@@ -16,8 +16,33 @@
     <fragment
         android:id="@+id/forgetPassFragment"
         android:name="com.uzuu.customer.feature.start.forgetpass.ForgetFragment"
-        android:label="Forget Password">
+        android:label="Quên mật khẩu – Bước 1">
+        <action
+            android:id="@+id/action_forgetPass_to_forgetOtp"
+            app:destination="@id/forgetOtpFragment"/>
+    </fragment>
 
+    <fragment
+        android:id="@+id/forgetOtpFragment"
+        android:name="com.uzuu.customer.feature.start.forgetpass.ForgetOtpFragment"
+        android:label="Quên mật khẩu – Bước 2">
+        <action
+            android:id="@+id/action_forgetOtp_to_forgetReset"
+            app:destination="@id/forgetResetFragment"/>
+        <argument
+            android:name="email"
+            app:argType="string"
+            android:defaultValue=""/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/forgetResetFragment"
+        android:name="com.uzuu.customer.feature.start.forgetpass.ForgetResetFragment"
+        android:label="Quên mật khẩu – Bước 3">
+        <argument
+            android:name="otp"
+            app:argType="string"
+            android:defaultValue=""/>
     </fragment>
 
     <fragment

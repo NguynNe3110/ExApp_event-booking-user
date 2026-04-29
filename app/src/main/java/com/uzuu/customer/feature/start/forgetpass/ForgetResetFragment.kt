@@ -1,24 +1,29 @@
 package com.uzuu.customer.feature.start.forgetpass
 
-import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
-import com.uzuu.customer.databinding.FragmentForgetPasswordBinding
+import androidx.navigation.fragment.navArgs
+import com.uzuu.customer.R
+import com.uzuu.customer.databinding.FragmentForgetResetBinding
 import com.uzuu.customer.feature.MainActivity
 import kotlinx.coroutines.launch
 
-class ForgetFragment : Fragment() {
+class ForgetResetFragment : Fragment() {
 
-    private var _binding: FragmentForgetPasswordBinding? = null
+    private var _binding: FragmentForgetResetBinding? = null
     val binding get() = _binding!!
+
+    private val args: ForgetResetFragmentArgs by navArgs()
 
     private val viewModel: ForgetPasswordViewModel by viewModels {
         val authRepo = (requireActivity() as MainActivity).container.authRepo
@@ -30,7 +35,7 @@ class ForgetFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentForgetPasswordBinding.inflate(inflater, container, false)
+        _binding = FragmentForgetResetBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -41,9 +46,11 @@ class ForgetFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
                     binding.progress.visibility = if (state.isLoading) View.VISIBLE else View.GONE
-                    binding.btnSendOtp.isEnabled = !state.isLoading
-                    binding.btnSendOtp.text = if (state.isLoading) "" else "Gửi mã xác thực"
-                    binding.inputEmail.isEnabled = !state.isLoading
+                    binding.btnResetPassword.isEnabled = !state.isLoading
+                    binding.btnResetPassword.text =
+                        if (state.isLoading) "" else "Đặt lại mật khẩu"
+                    binding.inputNewPassword.isEnabled = !state.isLoading
+                    binding.inputConfirmPassword.isEnabled = !state.isLoading
                 }
             }
         }
@@ -55,12 +62,16 @@ class ForgetFragment : Fragment() {
                         is ForgetPasswordUiEvent.Toast -> {
                             Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
                         }
-                        is ForgetPasswordUiEvent.NavigateToOtp -> {
-                            val action = ForgetFragmentDirections
-                                .actionForgetPassToForgetOtp(event.email)
-                            findNavController().navigate(action)
+                        is ForgetPasswordUiEvent.NavigateToLogin -> {
+                            findNavController().navigate(
+                                R.id.loginFragment,
+                                null,
+                                NavOptions.Builder()
+                                    .setPopUpTo(R.id.auth_graph, false)
+                                    .build()
+                            )
                         }
-                        ForgetPasswordUiEvent.NavigateToLogin -> {}
+                        is ForgetPasswordUiEvent.NavigateToOtp -> {}
                     }
                 }
             }
@@ -73,9 +84,11 @@ class ForgetFragment : Fragment() {
     }
 
     private fun setupEvent() {
-        binding.btnSendOtp.setOnClickListener {
-            viewModel.sendOtp(
-                binding.inputEmail.text.toString().trim()
+        binding.btnResetPassword.setOnClickListener {
+            viewModel.resetPassword(
+                otp = args.otp,
+                newPassword = binding.inputNewPassword.text.toString().trim(),
+                confirmPassword = binding.inputConfirmPassword.text.toString().trim()
             )
         }
     }

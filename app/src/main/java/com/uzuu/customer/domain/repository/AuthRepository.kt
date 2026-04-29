@@ -12,5 +12,8 @@ interface AuthRepository {
 
     suspend fun loginRequest(request: Login): ApiResult<BaseResponseDto<TokenResponseDto>>
 
+    suspend fun forgotPassword(email: String): ApiResult<String>
+
+    suspend fun resetPassword(otp: String, newPassword: String): ApiResult<String>
 
 }
