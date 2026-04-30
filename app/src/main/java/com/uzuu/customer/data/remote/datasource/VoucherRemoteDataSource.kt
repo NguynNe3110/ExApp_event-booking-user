@@ -1,0 +1,8 @@
+package com.uzuu.customer.data.remote.datasource
+
+import com.uzuu.customer.data.remote.api.VoucherApi
+
+class VoucherRemoteDataSource(private val voucherApi: VoucherApi) {
+    suspend fun getVouchers(page: Int = 0, size: Int = 50) =
+        voucherApi.getVouchers(page, size)
+}

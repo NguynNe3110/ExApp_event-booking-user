@@ -4,15 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.Toast
-import androidx.core.widget.addTextChangedListener
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.uzuu.customer.R
 import com.uzuu.customer.databinding.FragmentCartBinding
 import com.uzuu.customer.feature.MainActivity
 import com.uzuu.customer.ui.adapter.CartItemAdapter
@@ -29,9 +30,8 @@ class CartFragment : Fragment() {
 
     private val viewModel: CartViewModel by viewModels {
         val cartRepo  = (requireActivity() as MainActivity).container.cartRepo
-        val orderRepo = (requireActivity() as MainActivity).container.orderRepo
         val eventRepo = (requireActivity() as MainActivity).container.eventRepo
-        CartFactory(cartRepo, orderRepo, eventRepo)
+        CartFactory(cartRepo, eventRepo)
     }
 
     private val fmt = NumberFormat.getNumberInstance(Locale("vi", "VN"))
@@ -45,8 +45,6 @@ class CartFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setupRecycler()
-        setupPaymentDropdown()
-        setupVoucherInput()
         setupButtons()
         observeState()
         observeEvent()
@@ -71,27 +69,10 @@ class CartFragment : Fragment() {
         }
     }
 
-    private fun setupPaymentDropdown() {
-        val methods = listOf("BANKING", "MOMO", "VNPAY")
-        val adapter = ArrayAdapter(
-            requireContext(), android.R.layout.simple_dropdown_item_1line, methods
-        )
-        binding.dropdownPayment.setAdapter(adapter)
-        binding.dropdownPayment.setOnItemClickListener { _, _, pos, _ ->
-            viewModel.onPaymentSelected(methods[pos])
-        }
-    }
-
-    private fun setupVoucherInput() {
-        binding.edtVoucherCode.addTextChangedListener { editable ->
-            viewModel.onVoucherChanged(editable?.toString().orEmpty())
-        }
-    }
-
     private fun setupButtons() {
         binding.btnClearCart.setOnClickListener { viewModel.onClearCart() }
-        binding.btnCheckout.setOnClickListener { viewModel.onCheckout() }
-        binding.btnCheckoutSelected.setOnClickListener { viewModel.onCheckoutSelected() }
+        binding.btnCheckout.setOnClickListener { openCheckoutAll() }
+        binding.btnCheckoutSelected.setOnClickListener { openCheckoutSelected() }
         binding.btnDeleteSelected.setOnClickListener { viewModel.deleteSelectedItems() }
 
         binding.checkboxSelectAll.setOnCheckedChangeListener { _, _ ->
@@ -131,8 +112,6 @@ class CartFragment : Fragment() {
 
                     binding.btnCheckoutSelected.isEnabled = state.hasSelection
                     binding.btnDeleteSelected.isEnabled   = state.hasSelection
-
-                    binding.dropdownPayment.setText(state.selectedPayment, false)
                 }
             }
         }
@@ -145,7 +124,6 @@ class CartFragment : Fragment() {
                     when (event) {
                         is CartUiEvent.Toast ->
                             Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
-                        is CartUiEvent.CheckoutSuccess -> viewModel.loadCart()
                         is CartUiEvent.CartCleared,
                         is CartUiEvent.ItemDeleted -> { /* state đã cập nhật trong VM */ }
                     }
@@ -157,5 +135,32 @@ class CartFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun openCheckoutAll() {
+        val state = viewModel.cartState.value
+        if (state.items.isEmpty()) {
+            Toast.makeText(context, "Gio hang dang trong", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (state.unavailableItemIds.isNotEmpty()) {
+            Toast.makeText(context, "Co ve khong con mo ban, vui long xoa khoi gio", Toast.LENGTH_SHORT).show()
+            return
+        }
+        findNavController().navigate(R.id.checkoutFragment, bundleOf("itemIds" to longArrayOf()))
+    }
+
+    private fun openCheckoutSelected() {
+        val state = viewModel.cartState.value
+        if (!state.hasSelection) {
+            Toast.makeText(context, "Chua chon muc nao", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val selectedIds = state.selectedItemIds.toLongArray()
+        if (selectedIds.any { it in state.unavailableItemIds }) {
+            Toast.makeText(context, "Muc da chon co ve khong con mo ban", Toast.LENGTH_SHORT).show()
+            return
+        }
+        findNavController().navigate(R.id.checkoutFragment, bundleOf("itemIds" to selectedIds))
     }
 }

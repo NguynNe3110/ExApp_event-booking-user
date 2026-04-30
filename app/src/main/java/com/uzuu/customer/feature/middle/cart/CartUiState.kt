@@ -6,8 +6,6 @@ data class CartUiState(
     val isLoading: Boolean = false,
     val items: List<CartItem> = emptyList(),
     val totalAmount: Double = 0.0,
-    val selectedPayment: String = "BANKING",
-    val voucherCode: String = "",
     val unavailableItemIds: Set<Long> = emptySet(),
     val selectedItemIds: Set<Long> = emptySet()
 ) {

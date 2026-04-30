@@ -20,7 +20,29 @@
     <fragment
         android:id="@+id/cartFragment"
         android:name="com.uzuu.customer.feature.middle.cart.CartFragment"
-        android:label="Cart"/>
+        android:label="Cart">
+        <action
+            android:id="@+id/action_cartFragment_to_checkoutFragment"
+            app:destination="@id/checkoutFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/checkoutFragment"
+        android:name="com.uzuu.customer.feature.middle.checkout.CheckoutFragment"
+        android:label="Xac nhan thanh toan">
+        <argument
+            android:name="itemIds"
+            app:argType="long[]"
+            app:nullable="false" />
+        <action
+            android:id="@+id/action_checkoutFragment_to_voucherListFragment"
+            app:destination="@id/voucherListFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/voucherListFragment"
+        android:name="com.uzuu.customer.feature.middle.voucher.VoucherListFragment"
+        android:label="Chon voucher" />
 
     <fragment
         android:id="@+id/blogFragment"

@@ -7,7 +7,6 @@ import com.uzuu.customer.domain.model.CartItem
 import com.uzuu.customer.domain.model.Event
 import com.uzuu.customer.domain.repository.CartRepository
 import com.uzuu.customer.domain.repository.EventRepository
-import com.uzuu.customer.domain.repository.OrderRepository
 import java.text.SimpleDateFormat
 import java.util.Locale
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -19,7 +18,6 @@ import kotlinx.coroutines.launch
 
 class CartViewModel(
     private val cartRepo: CartRepository,
-    private val orderRepo: OrderRepository,
     private val eventRepo: EventRepository
 ) : ViewModel() {
 
@@ -73,9 +71,8 @@ class CartViewModel(
     }
 
     fun updateItemQuantity(itemId: Long, quantity: Int) {
-        if (quantity <= 0) {
-            return
-        }
+        if (quantity <= 0) return
+
         viewModelScope.launch {
             when (val r = cartRepo.updateCartItem(itemId, quantity)) {
                 is ApiResult.Success -> {
@@ -97,9 +94,10 @@ class CartViewModel(
     fun deleteSelectedItems() {
         val ids = _cartState.value.selectedItemIds
         if (ids.isEmpty()) {
-            viewModelScope.launch { _cartEvent.emit(CartUiEvent.Toast("Chưa chọn mục nào")) }
+            viewModelScope.launch { _cartEvent.emit(CartUiEvent.Toast("Chua chon muc nao")) }
             return
         }
+
         viewModelScope.launch {
             _cartState.update { it.copy(isLoading = true) }
             var lastCart = _cartState.value.items
@@ -109,7 +107,7 @@ class CartViewModel(
             ids.forEach { itemId ->
                 when (val r = cartRepo.deleteCartItem(itemId)) {
                     is ApiResult.Success -> {
-                        lastCart  = r.data.items
+                        lastCart = r.data.items
                         lastTotal = r.data.totalAmount
                     }
                     is ApiResult.Error -> hasError = true
@@ -127,8 +125,11 @@ class CartViewModel(
                 )
             }
 
-            if (hasError) _cartEvent.emit(CartUiEvent.Toast("Có lỗi khi xóa, vui lòng thử lại"))
-            else _cartEvent.emit(CartUiEvent.Toast("Đã xóa ${ids.size} mục khỏi giỏ"))
+            if (hasError) {
+                _cartEvent.emit(CartUiEvent.Toast("Co loi khi xoa, vui long thu lai"))
+            } else {
+                _cartEvent.emit(CartUiEvent.Toast("Da xoa ${ids.size} muc khoi gio"))
+            }
         }
     }
 
@@ -138,74 +139,16 @@ class CartViewModel(
             when (val r = cartRepo.clearCart()) {
                 is ApiResult.Success -> {
                     _cartState.update {
-                        it.copy(isLoading = false, items = emptyList(),
-                            totalAmount = 0.0, unavailableItemIds = emptySet(), selectedItemIds = emptySet())
+                        it.copy(
+                            isLoading = false,
+                            items = emptyList(),
+                            totalAmount = 0.0,
+                            unavailableItemIds = emptySet(),
+                            selectedItemIds = emptySet()
+                        )
                     }
                     _cartEvent.emit(CartUiEvent.CartCleared)
-                    _cartEvent.emit(CartUiEvent.Toast("Đã xóa toàn bộ giỏ hàng"))
-                }
-                is ApiResult.Error -> {
-                    _cartState.update { it.copy(isLoading = false) }
-                    _cartEvent.emit(CartUiEvent.Toast(r.message))
-                }
-            }
-        }
-    }
-
-    fun onPaymentSelected(method: String) {
-        _cartState.update { it.copy(selectedPayment = method) }
-    }
-
-    fun onVoucherChanged(code: String) {
-        _cartState.update { it.copy(voucherCode = code.trim()) }
-    }
-
-    fun onCheckout() {
-        val state = _cartState.value
-        if (state.items.isEmpty()) {
-            viewModelScope.launch { _cartEvent.emit(CartUiEvent.Toast("Giỏ hàng đang trống")) }
-            return
-        }
-        if (state.unavailableItemIds.isNotEmpty()) {
-            viewModelScope.launch { _cartEvent.emit(CartUiEvent.Toast("Co ve khong con mo ban, vui long xoa khoi gio")) }
-            return
-        }
-        viewModelScope.launch {
-            _cartState.update { it.copy(isLoading = true) }
-            when (val r = orderRepo.checkout(state.selectedPayment, state.voucherCode)) {
-                is ApiResult.Success -> {
-                    _cartState.update { it.copy(isLoading = false) }
-                    _cartEvent.emit(CartUiEvent.Toast("🎉 Đặt hàng thành công!"))
-                    _cartEvent.emit(CartUiEvent.CheckoutSuccess)
-                }
-                is ApiResult.Error -> {
-                    _cartState.update { it.copy(isLoading = false) }
-                    _cartEvent.emit(CartUiEvent.Toast(r.message))
-                }
-            }
-        }
-    }
-
-    fun onCheckoutSelected() {
-        val state = _cartState.value
-        if (!state.hasSelection) {
-            viewModelScope.launch { _cartEvent.emit(CartUiEvent.Toast("Chưa chọn mục nào")) }
-            return
-        }
-        val itemIds = state.selectedItemIds.toList()
-        if (itemIds.any { it in state.unavailableItemIds }) {
-            viewModelScope.launch { _cartEvent.emit(CartUiEvent.Toast("Muc da chon co ve khong con mo ban")) }
-            return
-        }
-        viewModelScope.launch {
-            _cartState.update { it.copy(isLoading = true) }
-            when (val r = orderRepo.checkoutSelected(state.selectedPayment, itemIds, state.voucherCode)) {
-                is ApiResult.Success -> {
-                    _cartState.update {
-                        it.copy(isLoading = false, selectedItemIds = emptySet())
-                    }
-                    _cartEvent.emit(CartUiEvent.Toast("🎉 Đặt hàng ${itemIds.size} mục thành công!"))
-                    _cartEvent.emit(CartUiEvent.CheckoutSuccess)
+                    _cartEvent.emit(CartUiEvent.Toast("Da xoa toan bo gio hang"))
                 }
                 is ApiResult.Error -> {
                     _cartState.update { it.copy(isLoading = false) }

@@ -17,6 +17,7 @@ import com.uzuu.customer.data.remote.datasource.EventRemoteDataSource
 import com.uzuu.customer.data.remote.datasource.MyTicketRemoteDataSource
 import com.uzuu.customer.data.remote.datasource.OrderRemoteDataSource
 import com.uzuu.customer.data.remote.datasource.UserRemoteDataSource
+import com.uzuu.customer.data.remote.datasource.VoucherRemoteDataSource
 import com.uzuu.customer.data.repository.AuthRepositoryImpl
 import com.uzuu.customer.data.repository.BlogRepositoryImpl
 import com.uzuu.customer.data.repository.CartRepositoryImpl
@@ -25,6 +26,7 @@ import com.uzuu.customer.data.repository.EventRepositoryImpl
 import com.uzuu.customer.data.repository.MyTicketRepositoryImpl
 import com.uzuu.customer.data.repository.OrderRepositoryImpl
 import com.uzuu.customer.data.repository.UserRepositoryImpl
+import com.uzuu.customer.data.repository.VoucherRepositoryImpl
 
 class AppContainer(context: Context) {
     private val db = AppDatabase.get(context)
@@ -38,6 +40,7 @@ class AppContainer(context: Context) {
     val myTicketApi  = RetrofitProvider.myTicketApi
     val orderApi     = RetrofitProvider.orderApi
     val blogApi      = RetrofitProvider.blogApi
+    val voucherApi   = RetrofitProvider.voucherApi
 
     // ── Local Data Sources ─────────────────────────────────────────────────────
     val userLocal = UserDataLocalSource(db.userDao())
@@ -56,6 +59,7 @@ class AppContainer(context: Context) {
     val myTicketRemote  = MyTicketRemoteDataSource(myTicketApi = myTicketApi)
     val orderRemote     = OrderRemoteDataSource(orderApi = orderApi)
     val blogRemote      = BlogRemoteDataSource(blogApi = blogApi)
+    val voucherRemote   = VoucherRemoteDataSource(voucherApi = voucherApi)
 
     // ── Repositories ──────────────────────────────────────────────────────────
     val userRepo        = UserRepositoryImpl(userLocal, userRemote)
@@ -66,4 +70,5 @@ class AppContainer(context: Context) {
     val myTicketRepo    = MyTicketRepositoryImpl(myTicketRemote, ticketLocal)
     val orderRepo       = OrderRepositoryImpl(orderRemote, orderLocal)
     val blogRepo        = BlogRepositoryImpl(blogRemote)
+    val voucherRepo     = VoucherRepositoryImpl(voucherRemote)
 }

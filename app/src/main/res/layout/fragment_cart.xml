@@ -5,127 +5,124 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/blue_bg_1">
+    android:background="@color/blue_bg_1"
+    android:orientation="vertical">
 
-    <!-- Header -->
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:shapeAppearanceOverlay="@style/CardRoundedTop"
-        app:contentPadding="14dp"
         android:backgroundTint="@color/blue_surface_9"
-        app:cardElevation="4dp">
+        app:cardElevation="4dp"
+        app:contentPadding="14dp"
+        app:shapeAppearanceOverlay="@style/CardRoundedTop">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
             <TextView
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="🛒  Giỏ hàng"
+                android:layout_weight="1"
+                android:text="Gio hang"
+                android:textColor="@color/blue_text_dark"
                 android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@color/blue_text_dark"/>
+                android:textStyle="bold" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_clear_cart"
                 style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
-                android:text="Xóa tất cả"
+                android:text="Xoa tat ca"
                 android:textAllCaps="false"
-                android:textSize="13sp"
                 android:textColor="@color/blue_primary_550"
+                android:textSize="13sp"
+                app:cornerRadius="8dp"
                 app:strokeColor="@color/blue_primary_550"
-                app:strokeWidth="1dp"
-                app:cornerRadius="8dp"/>
+                app:strokeWidth="1dp" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Toolbar chọn tất cả + xóa đã chọn (chỉ hiện khi có item) -->
     <LinearLayout
         android:id="@+id/toolbar_selection"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:orientation="horizontal"
+        android:background="@color/blue_bg_3"
         android:gravity="center_vertical"
+        android:orientation="horizontal"
         android:paddingHorizontal="12dp"
-        android:visibility="gone"
-        android:background="@color/blue_bg_3">
+        android:visibility="gone">
 
         <CheckBox
             android:id="@+id/checkbox_select_all"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Chọn tất cả"
-            android:textSize="14sp"
-            android:textColor="@color/blue_text_dark"/>
+            android:text="Chon tat ca"
+            android:textColor="@color/blue_text_dark"
+            android:textSize="14sp" />
 
-        <Space android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1"/>
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_delete_selected"
             style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="36dp"
-            android:text="Xóa đã chọn"
+            android:text="Xoa da chon"
             android:textAllCaps="false"
-            android:textSize="13sp"
             android:textColor="@color/event_ongoing"
+            android:textSize="13sp"
+            app:cornerRadius="8dp"
             app:strokeColor="@color/event_ongoing"
-            app:strokeWidth="1dp"
-            app:cornerRadius="8dp"/>
+            app:strokeWidth="1dp" />
     </LinearLayout>
 
-    <!-- Loading -->
     <ProgressBar
         android:id="@+id/progress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="24dp"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
-    <!-- Empty state -->
     <TextView
         android:id="@+id/tv_empty"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:gravity="center"
-        android:text="Giỏ hàng trống 🛒"
-        android:textSize="18sp"
+        android:text="Gio hang trong"
         android:textColor="@color/blue_text_secondary"
-        android:visibility="gone"/>
+        android:textSize="18sp"
+        android:visibility="gone" />
 
-    <!-- Danh sách -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_cart"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:clipToPadding="false"
         android:paddingHorizontal="12dp"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
-        android:clipToPadding="false"
         android:visibility="gone"
         tools:listitem="@layout/item_cart_item"
-        tools:visibility="visible"/>
+        tools:visibility="visible" />
 
-    <!-- Footer thanh toán -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/card_checkout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="0dp"
-        app:cardElevation="8dp"
         android:backgroundTint="@color/white"
-        android:visibility="gone">
+        android:visibility="gone"
+        app:cardCornerRadius="0dp"
+        app:cardElevation="8dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -133,123 +130,72 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Tổng tiền tất cả / đã chọn -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="8dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/tv_total_label"
                     android:layout_width="0dp"
-                    android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:text="Tổng cộng:"
+                    android:layout_weight="1"
+                    android:text="Tong cong:"
                     android:textSize="15sp"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/tv_total"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0đ"
+                    android:text="0d"
+                    android:textColor="#E53935"
                     android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="#E53935"/>
+                    android:textStyle="bold" />
             </LinearLayout>
 
-            <!-- Phương thức thanh toán -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Ma giam gia"
-                android:textSize="14sp"
-                android:textColor="@color/blue_text_primary"
-                android:layout_marginBottom="6dp"/>
+                android:text="Voucher va phuong thuc thanh toan se chon o man hinh xac nhan."
+                android:textColor="@color/blue_text_secondary"
+                android:textSize="13sp" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Ap dung cho su kien cua organizer tao ma"
-                android:textSize="14sp"
-                android:textColor="@color/blue_text_primary"
-                android:layout_marginBottom="6dp"/>
-
-            <EditText
-                android:id="@+id/edt_voucher_code"
-                android:layout_width="match_parent"
-                android:layout_height="44dp"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/bg_border_blue_square"
-                android:hint="Nhap ma giam gia"
-                android:paddingHorizontal="12dp"
-                android:singleLine="true"
-                android:textSize="15sp"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Phuong thuc thanh toan"
-                android:textSize="14sp"
-                android:textColor="@color/blue_text_primary"
-                android:layout_marginBottom="6dp"/>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                app:boxCornerRadiusTopStart="8dp"
-                app:boxCornerRadiusTopEnd="8dp"
-                app:boxCornerRadiusBottomStart="8dp"
-                app:boxCornerRadiusBottomEnd="8dp">
-
-                <AutoCompleteTextView
-                    android:id="@+id/dropdown_payment"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="BANKING"
-                    android:textSize="15sp"
-                    android:focusable="false"
-                    android:inputType="none"/>
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- Hai nút: Thanh toán đã chọn | Thanh toán tất cả -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginTop="14dp"
+                android:orientation="horizontal"
                 android:weightSum="2">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_checkout_selected"
                     style="@style/Widget.Material3.Button.OutlinedButton"
                     android:layout_width="0dp"
-                    android:layout_weight="1"
                     android:layout_height="52dp"
                     android:layout_marginEnd="6dp"
-                    android:text="Mục đã chọn"
+                    android:layout_weight="1"
+                    android:text="Mua muc chon"
                     android:textAllCaps="false"
-                    android:textSize="14sp"
                     android:textColor="@color/blue_primary_550"
-                    app:strokeColor="@color/blue_primary_550"
-                    app:cornerRadius="12dp"/>
+                    android:textSize="14sp"
+                    app:cornerRadius="12dp"
+                    app:strokeColor="@color/blue_primary_550" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_checkout"
                     android:layout_width="0dp"
-                    android:layout_weight="1"
                     android:layout_height="52dp"
                     android:layout_marginStart="6dp"
-                    android:text="Tất cả"
+                    android:layout_weight="1"
+                    android:text="Mua tat ca"
                     android:textAllCaps="false"
                     android:textColor="@android:color/white"
                     android:textSize="14sp"
                     app:backgroundTint="@color/blue_primary_550"
-                    app:cornerRadius="12dp"/>
+                    app:cornerRadius="12dp" />
             </LinearLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
-
 </LinearLayout>
