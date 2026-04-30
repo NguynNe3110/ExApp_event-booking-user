@@ -12,4 +12,14 @@ interface EventApi {
         @Query("page") page: Int,
         @Query("size") size: Int
     ): BaseResponseDto<PageResponse<EventResponseDto>>
+
+    @GET("events/search")
+    suspend fun searchEvents(
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("search") search: String? = null,
+        @Query("province") province: String? = null,
+        @Query("minPrice") minPrice: Double? = null,
+        @Query("maxPrice") maxPrice: Double? = null
+    ): BaseResponseDto<PageResponse<EventResponseDto>>
 }

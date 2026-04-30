@@ -11,4 +11,21 @@ class EventRemoteDataSource(
     suspend fun getEvent(page: Int):  BaseResponseDto<PageResponse<EventResponseDto>> {
         return eventApi.getEvents(page, 10)
     }
+
+    suspend fun searchEvents(
+        page: Int,
+        search: String?,
+        province: String?,
+        minPrice: Double?,
+        maxPrice: Double?
+    ): BaseResponseDto<PageResponse<EventResponseDto>> {
+        return eventApi.searchEvents(
+            page = page,
+            size = 10,
+            search = search,
+            province = province,
+            minPrice = minPrice,
+            maxPrice = maxPrice
+        )
+    }
 }

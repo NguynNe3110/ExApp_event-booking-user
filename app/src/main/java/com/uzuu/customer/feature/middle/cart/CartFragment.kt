@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -29,7 +30,8 @@ class CartFragment : Fragment() {
     private val viewModel: CartViewModel by viewModels {
         val cartRepo  = (requireActivity() as MainActivity).container.cartRepo
         val orderRepo = (requireActivity() as MainActivity).container.orderRepo
-        CartFactory(cartRepo, orderRepo)
+        val eventRepo = (requireActivity() as MainActivity).container.eventRepo
+        CartFactory(cartRepo, orderRepo, eventRepo)
     }
 
     private val fmt = NumberFormat.getNumberInstance(Locale("vi", "VN"))
@@ -44,6 +46,7 @@ class CartFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setupRecycler()
         setupPaymentDropdown()
+        setupVoucherInput()
         setupButtons()
         observeState()
         observeEvent()
@@ -79,6 +82,12 @@ class CartFragment : Fragment() {
         }
     }
 
+    private fun setupVoucherInput() {
+        binding.edtVoucherCode.addTextChangedListener { editable ->
+            viewModel.onVoucherChanged(editable?.toString().orEmpty())
+        }
+    }
+
     private fun setupButtons() {
         binding.btnClearCart.setOnClickListener { viewModel.onClearCart() }
         binding.btnCheckout.setOnClickListener { viewModel.onCheckout() }
@@ -103,6 +112,7 @@ class CartFragment : Fragment() {
                     binding.toolbarSelection.visibility = if (!isEmpty) View.VISIBLE else View.GONE
 
                     cartAdapter.selectedIds = state.selectedItemIds
+                    cartAdapter.unavailableIds = state.unavailableItemIds
                     cartAdapter.submitList(state.items)
 
                     binding.checkboxSelectAll.setOnCheckedChangeListener(null)

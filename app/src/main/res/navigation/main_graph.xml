@@ -23,6 +23,11 @@
         android:label="Cart"/>
 
     <fragment
+        android:id="@+id/blogFragment"
+        android:name="com.uzuu.customer.feature.middle.blog.BlogFragment"
+        android:label="Blog"/>
+
+    <fragment
         android:id="@+id/ticketFragment"
         android:name="com.uzuu.customer.feature.middle.ticket.TicketFragment"
         android:label="Ticket"/>

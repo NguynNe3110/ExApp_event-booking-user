@@ -12,6 +12,11 @@
         android:icon="@drawable/ic_cart" />
 
     <item
+        android:id="@+id/blogFragment"
+        android:title="Blog"
+        android:icon="@drawable/ic_blog" />
+
+    <item
         android:id="@+id/ticketFragment"
         android:title="Ticket"
         android:icon="@drawable/ic_ticket" />

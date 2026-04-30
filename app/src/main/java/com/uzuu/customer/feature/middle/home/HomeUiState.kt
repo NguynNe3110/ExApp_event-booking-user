@@ -10,5 +10,8 @@ data class HomeUiState(
     val events: List<Event> = emptyList(),
     val categories: List<CategoryItem> = emptyList(),
     val selectedCategoryId: Int = -1,
-    val searchQuery: String = ""
+    val searchQuery: String = "",
+    val cityFilter: String = "",
+    val minPriceFilter: Double? = null,
+    val maxPriceFilter: Double? = null
 )

@@ -11,17 +11,19 @@ private val gson = Gson()
 fun EventResponseDto.eventDtoToDomain(): Event {
     return Event(
         id            = id,
-        name          = name,
-        categoryName  = categoryName,
-        location      = location,
+        name          = name.orEmpty(),
+        categoryName  = categoryName ?: category?.name.orEmpty(),
+        location      = listOfNotNull(location, address, provinceName ?: province)
+            .firstOrNull { it.isNotBlank() }
+            .orEmpty(),
         startTime     = startTime,
         endTime       = endTime,
         saleStartDate = saleStartDate,
         saleEndDate   = saleEndDate,
         description   = description,
-        status        = status,
-        imageUrls     = imageUrls,
-        ticketTypes   = ticketTypes.map { it.ticketDtoToDomain() }
+        status        = status.orEmpty(),
+        imageUrls     = imageUrls.orEmpty(),
+        ticketTypes   = ticketTypes.orEmpty().map { it.ticketDtoToDomain() }
     )
 }
 

@@ -10,6 +10,7 @@ import com.uzuu.customer.data.local.datasource.TicketLocalDataSource
 import com.uzuu.customer.data.local.datasource.UserDataLocalSource
 import com.uzuu.customer.data.remote.RetrofitProvider
 import com.uzuu.customer.data.remote.datasource.AuthRemoteDataSource
+import com.uzuu.customer.data.remote.datasource.BlogRemoteDataSource
 import com.uzuu.customer.data.remote.datasource.CartRemoteDataSource
 import com.uzuu.customer.data.remote.datasource.CategoryRemoteDataSource
 import com.uzuu.customer.data.remote.datasource.EventRemoteDataSource
@@ -17,6 +18,7 @@ import com.uzuu.customer.data.remote.datasource.MyTicketRemoteDataSource
 import com.uzuu.customer.data.remote.datasource.OrderRemoteDataSource
 import com.uzuu.customer.data.remote.datasource.UserRemoteDataSource
 import com.uzuu.customer.data.repository.AuthRepositoryImpl
+import com.uzuu.customer.data.repository.BlogRepositoryImpl
 import com.uzuu.customer.data.repository.CartRepositoryImpl
 import com.uzuu.customer.data.repository.CategoryRepositoryImpl
 import com.uzuu.customer.data.repository.EventRepositoryImpl
@@ -35,6 +37,7 @@ class AppContainer(context: Context) {
     val userApi      = RetrofitProvider.userApi
     val myTicketApi  = RetrofitProvider.myTicketApi
     val orderApi     = RetrofitProvider.orderApi
+    val blogApi      = RetrofitProvider.blogApi
 
     // ── Local Data Sources ─────────────────────────────────────────────────────
     val userLocal = UserDataLocalSource(db.userDao())
@@ -52,6 +55,7 @@ class AppContainer(context: Context) {
     val userRemote      = UserRemoteDataSource(userApi = userApi)
     val myTicketRemote  = MyTicketRemoteDataSource(myTicketApi = myTicketApi)
     val orderRemote     = OrderRemoteDataSource(orderApi = orderApi)
+    val blogRemote      = BlogRemoteDataSource(blogApi = blogApi)
 
     // ── Repositories ──────────────────────────────────────────────────────────
     val userRepo        = UserRepositoryImpl(userLocal, userRemote)
@@ -61,4 +65,5 @@ class AppContainer(context: Context) {
     val cartRepo        = CartRepositoryImpl(cartRemote, cartLocal)
     val myTicketRepo    = MyTicketRepositoryImpl(myTicketRemote, ticketLocal)
     val orderRepo       = OrderRepositoryImpl(orderRemote, orderLocal)
+    val blogRepo        = BlogRepositoryImpl(blogRemote)
 }

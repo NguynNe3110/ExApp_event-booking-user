@@ -10,20 +10,22 @@ import retrofit2.http.Query
 
 interface OrderApi {
 
-    @POST("orders/checkout")
+    @POST("bookings/checkout")
     suspend fun checkout(
-        @Query("paymentMethod") paymentMethod: String
+        @Query("paymentMethod") paymentMethod: String,
+        @Query("voucherCode") voucherCode: String? = null
     ): BaseResponseDto<OrderResponseDto>
 
-    @GET("orders")
+    @GET("bookings")
     suspend fun getMyOrders(
         @Query("page") page: Int = 0,
         @Query("size") size: Int = 20
     ): BaseResponseDto<PageResponse<OrderResponseDto>>
 
-    @POST("orders/checkout-selected")
+    @POST("bookings/checkout-selected")
     suspend fun checkoutSelected(
         @Query("paymentMethod") paymentMethod: String,
+        @Query("voucherCode") voucherCode: String? = null,
         @Body itemIds: List<Long>
     ): BaseResponseDto<OrderResponseDto>
 }

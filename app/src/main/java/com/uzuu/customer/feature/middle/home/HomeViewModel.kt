@@ -29,6 +29,7 @@ class HomeViewModel(
     val homeEvent = _homeEvent.asSharedFlow()
 
     private var pollingJob: Job? = null
+    private var searchJob: Job? = null
 
     fun init() {
         viewModelScope.launch {
@@ -37,13 +38,11 @@ class HomeViewModel(
             val categoriesDeferred = async {
                 try {
                     val result = categoryRepo.getAllCategories()
-                    println("DEBUG [HomeViewModel] categories OK: ${result.size}")
-                    listOf(CategoryItem(id = -1, name = "Tất cả", isSelected = false)) + result
+                    listOf(CategoryItem(id = -1, name = "Tat ca", isSelected = false)) + result
                 } catch (e: Exception) {
                     val msg = e.message ?: ""
-                    println("DEBUG [HomeViewModel] ERROR categories: $msg")
                     if (msg.contains("401")) {
-                        _homeEvent.emit(HomeUiEvent.Toast("Phiên đăng nhập hết hạn"))
+                        _homeEvent.emit(HomeUiEvent.Toast("Phien dang nhap het han"))
                         _homeEvent.emit(HomeUiEvent.navigateBack)
                     }
                     emptyList<CategoryItem>()
@@ -52,14 +51,11 @@ class HomeViewModel(
 
             val eventsDeferred = async {
                 try {
-                    val result = eventRepo.getEvent(1)
-                    println("DEBUG [HomeViewModel] events OK: ${result.data.size}")
-                    result
+                    eventRepo.getEvent(1)
                 } catch (e: Exception) {
                     val msg = e.message ?: ""
-                    println("DEBUG [HomeViewModel] ERROR events: $msg")
                     if (msg.contains("401")) {
-                        _homeEvent.emit(HomeUiEvent.Toast("Phiên đăng nhập hết hạn"))
+                        _homeEvent.emit(HomeUiEvent.Toast("Phien dang nhap het han"))
                         _homeEvent.emit(HomeUiEvent.navigateBack)
                     }
                     null
@@ -87,88 +83,68 @@ class HomeViewModel(
     fun loadMoreEvents() {
         val state = _homeState.value
         if (state.isLoading || state.isLastPage) return
-
-        viewModelScope.launch {
-            _homeState.update { it.copy(isLoading = true) }
-            try {
-                val result = eventRepo.getEvent(currentPage)
-                currentPage++
-                _homeState.update { s ->
-                    val newAll = s.allEvents + result.data
-                    val filtered = filterByCategoryAndQuery(newAll, s.selectedCategoryId, s.categories, s.searchQuery)
-                    s.copy(
-                        allEvents = newAll,
-                        events = filtered,
-                        isLoading = false,
-                        isLastPage = result.isLast
-                    )
-                }
-            } catch (e: Exception) {
-                val msg = e.message ?: ""
-                println("DEBUG [HomeViewModel] loadMore ERROR: $msg")
-                if (msg.contains("401")) {
-                    _homeEvent.emit(HomeUiEvent.Toast("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại"))
-                    _homeEvent.emit(HomeUiEvent.navigateBack)
-                }
-                _homeState.update { it.copy(isLoading = false) }
-            }
-        }
+        loadEventsPage(page = currentPage, append = true)
     }
 
     fun onCategorySelected(category: CategoryItem) {
         _homeState.update { state ->
-            val updatedCategories = state.categories.map { 
+            val updatedCategories = state.categories.map {
                 it.copy(isSelected = it.id == category.id)
             }
-            
-            val filtered = if (category.id == -1) {
-                state.allEvents
-            } else {
-                filterByCategoryAndQuery(state.allEvents, category.id, updatedCategories, state.searchQuery)
-            }
-            
             state.copy(
                 categories = updatedCategories,
                 selectedCategoryId = category.id,
-                events = filtered
+                events = filterForVisibleList(
+                    events = state.allEvents,
+                    categoryId = category.id,
+                    categories = updatedCategories,
+                    state = state
+                )
             )
         }
     }
 
     fun onSearch(query: String) {
         _homeState.update { state ->
-            val filtered = filterByCategoryAndQuery(
-                events     = state.allEvents,
-                categoryId = state.selectedCategoryId,
-                categories = state.categories,
-                query      = query
+            val nextState = state.copy(searchQuery = query)
+            nextState.copy(
+                events = filterForVisibleList(
+                    events = nextState.allEvents,
+                    categoryId = nextState.selectedCategoryId,
+                    categories = nextState.categories,
+                    state = nextState,
+                    forceLocalFilters = true
+                )
             )
-            state.copy(searchQuery = query, events = filtered)
+        }
+
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            delay(400L)
+            loadEventsPage(page = 1, append = false)
         }
     }
 
-    private fun filterByCategoryAndQuery(
-        events: List<Event>,
-        categoryId: Int,
-        categories: List<CategoryItem>,
-        query: String
-    ): List<Event> {
-        var result = events
-
-        if (categoryId != -1) {
-            val selectedName = categories.find { it.id == categoryId }?.name
-            if (selectedName != null) {
-                result = result.filter { it.categoryName == selectedName }
-            }
+    fun onFiltersChanged(city: String, minPrice: Double?, maxPrice: Double?) {
+        _homeState.update {
+            it.copy(
+                cityFilter = city.trim(),
+                minPriceFilter = minPrice,
+                maxPriceFilter = maxPrice
+            )
         }
+        loadEventsPage(page = 1, append = false)
+    }
 
-        if (query.isNotBlank()) {
-            result = result.filter {
-                it.name.contains(query.trim(), ignoreCase = true)
-            }
+    fun clearFilters() {
+        _homeState.update {
+            it.copy(
+                cityFilter = "",
+                minPriceFilter = null,
+                maxPriceFilter = null
+            )
         }
-
-        return result
+        loadEventsPage(page = 1, append = false)
     }
 
     fun startPolling(intervalMs: Long = 30_000L) {
@@ -176,8 +152,7 @@ class HomeViewModel(
         pollingJob = viewModelScope.launch {
             while (true) {
                 delay(intervalMs)
-                refresh()  // hàm refresh() ở Cách 1
-                println("DEBUG [HomeViewModel] polling refreshed")
+                refresh()
             }
         }
     }
@@ -188,26 +163,129 @@ class HomeViewModel(
     }
 
     fun refresh() {
+        loadEventsPage(page = 1, append = false, showLoading = false)
+    }
+
+    private fun loadEventsPage(
+        page: Int,
+        append: Boolean,
+        showLoading: Boolean = true
+    ) {
         viewModelScope.launch {
+            if (showLoading) _homeState.update { it.copy(isLoading = true) }
             try {
-                val result = eventRepo.getEvent(1)
-                currentPage = 2
-                _homeState.update { state ->
-                    val filtered = filterByCategoryAndQuery(
-                        events     = result.data,
-                        categoryId = state.selectedCategoryId,
-                        categories = state.categories,
-                        query      = state.searchQuery
+                val stateBeforeCall = _homeState.value
+                val result = if (hasServerFilters(stateBeforeCall)) {
+                    eventRepo.searchEvents(
+                        page = page,
+                        search = stateBeforeCall.searchQuery.takeIf { it.isNotBlank() },
+                        province = stateBeforeCall.cityFilter.takeIf { it.isNotBlank() },
+                        minPrice = stateBeforeCall.minPriceFilter,
+                        maxPrice = stateBeforeCall.maxPriceFilter
                     )
+                } else {
+                    eventRepo.getEvent(page)
+                }
+
+                currentPage = page + 1
+                _homeState.update { state ->
+                    val allEvents = if (append) state.allEvents + result.data else result.data
                     state.copy(
-                        allEvents  = result.data,
-                        events     = filtered,
+                        isLoading = false,
+                        allEvents = allEvents,
+                        events = filterForVisibleList(
+                            events = allEvents,
+                            categoryId = state.selectedCategoryId,
+                            categories = state.categories,
+                            state = state
+                        ),
                         isLastPage = result.isLast
                     )
                 }
             } catch (e: Exception) {
-                println("DEBUG [HomeViewModel] refresh ERROR: ${e.message}")
+                val msg = e.message ?: ""
+                if (msg.contains("401")) {
+                    _homeEvent.emit(HomeUiEvent.Toast("Phien dang nhap het han, vui long dang nhap lai"))
+                    _homeEvent.emit(HomeUiEvent.navigateBack)
+                } else {
+                    _homeEvent.emit(HomeUiEvent.Toast(msg.ifBlank { "Khong tai duoc su kien" }))
+                }
+                _homeState.update { it.copy(isLoading = false) }
             }
         }
+    }
+
+    private fun filterForVisibleList(
+        events: List<Event>,
+        categoryId: Int,
+        categories: List<CategoryItem>,
+        state: HomeUiState,
+        forceLocalFilters: Boolean = false
+    ): List<Event> {
+        return filterByCategoryAndQuery(
+            events = events,
+            categoryId = categoryId,
+            categories = categories,
+            query = state.searchQuery,
+            city = state.cityFilter,
+            minPrice = state.minPriceFilter,
+            maxPrice = state.maxPriceFilter,
+            applyNonCategoryFilters = forceLocalFilters || !hasServerFilters(state)
+        )
+    }
+
+    private fun filterByCategoryAndQuery(
+        events: List<Event>,
+        categoryId: Int,
+        categories: List<CategoryItem>,
+        query: String,
+        city: String = "",
+        minPrice: Double? = null,
+        maxPrice: Double? = null,
+        applyNonCategoryFilters: Boolean = true
+    ): List<Event> {
+        var result = events
+
+        if (categoryId != -1) {
+            val selectedName = categories.find { it.id == categoryId }?.name
+            if (selectedName != null) {
+                result = result.filter { it.categoryName == selectedName }
+            }
+        }
+
+        if (!applyNonCategoryFilters) return result
+
+        if (query.isNotBlank()) {
+            val normalizedQuery = query.trim()
+            result = result.filter {
+                it.name.contains(normalizedQuery, ignoreCase = true) ||
+                    it.location.contains(normalizedQuery, ignoreCase = true)
+            }
+        }
+
+        if (city.isNotBlank()) {
+            val normalizedCity = city.trim()
+            result = result.filter {
+                it.location.contains(normalizedCity, ignoreCase = true)
+            }
+        }
+
+        if (minPrice != null || maxPrice != null) {
+            result = result.filter { event ->
+                val price = event.ticketTypes.minOfOrNull { it.price }
+                val aboveMin = minPrice == null || (price != null && price >= minPrice)
+                val belowMax = maxPrice == null || (price != null && price <= maxPrice)
+                aboveMin && belowMax
+            }
+        }
+
+        return result
+    }
+
+    private fun hasServerFilters(state: HomeUiState): Boolean {
+        return state.searchQuery.isNotBlank() ||
+            state.cityFilter.isNotBlank() ||
+            state.minPriceFilter != null ||
+            state.maxPriceFilter != null
     }
 }

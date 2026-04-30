@@ -1,6 +1,7 @@
 package com.uzuu.customer.data.remote
 
 import com.uzuu.customer.data.remote.api.AuthApi
+import com.uzuu.customer.data.remote.api.BlogApi
 import com.uzuu.customer.data.remote.api.CartApi
 import com.uzuu.customer.data.remote.api.CategoryApi
 import com.uzuu.customer.data.remote.api.EventApi
@@ -51,4 +52,5 @@ object RetrofitProvider {
     val userApi: UserApi by lazy { retrofit.create(UserApi::class.java) }
     val myTicketApi: MyTicketApi by lazy { retrofit.create(MyTicketApi::class.java) }
     val orderApi: OrderApi by lazy { retrofit.create(OrderApi::class.java) }
+    val blogApi: BlogApi by lazy { retrofit.create(BlogApi::class.java) }
 }

@@ -1,6 +1,7 @@
 package com.uzuu.customer.ui.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -29,6 +30,12 @@ class CartItemAdapter(
             notifyDataSetChanged()
         }
 
+    var unavailableIds: Set<Long> = emptySet()
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
+
     inner class VH(val binding: ItemCartItemBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
@@ -46,6 +53,7 @@ class CartItemAdapter(
             tvUnitPrice.text   = "${fmt.format(item.unitPrice.toLong())}đ / vé"
             tvQuantity.text    = item.quantity.toString()
             tvSubtotal.text    = "${fmt.format(item.subtotal.toLong())}đ"
+            tvUnavailableBadge.visibility = if (item.id in unavailableIds) View.VISIBLE else View.GONE
 
             checkboxSelect.setOnCheckedChangeListener(null)
             checkboxSelect.isChecked = item.id in selectedIds
@@ -56,9 +64,11 @@ class CartItemAdapter(
             btnMinus.setOnClickListener {
                 onQuantityChange(item.id, item.quantity - 1)
             }
+            btnMinus.isEnabled = item.id !in unavailableIds
             btnPlus.setOnClickListener {
                 onQuantityChange(item.id, item.quantity + 1)
             }
+            btnPlus.isEnabled = item.id !in unavailableIds
         }
     }
 }

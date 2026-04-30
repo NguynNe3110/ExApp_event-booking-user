@@ -54,6 +54,7 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setupAdapters()
         setupSearch()
+        setupFilters()
         observeState()
         observeEvent()
         setupPagination()
@@ -97,6 +98,29 @@ class HomeFragment : Fragment() {
     private fun setupSearch() {
         binding.edtSearch.addTextChangedListener { editable ->
             viewModel.onSearch(editable?.toString() ?: "")
+        }
+    }
+
+    private fun setupFilters() {
+        binding.btnApplyFilters.setOnClickListener {
+            val minPrice = binding.edtMinPrice.text?.toString()?.trim()?.toDoubleOrNull()
+            val maxPrice = binding.edtMaxPrice.text?.toString()?.trim()?.toDoubleOrNull()
+            if (minPrice != null && maxPrice != null && minPrice > maxPrice) {
+                Toast.makeText(context, "Gia toi thieu khong duoc lon hon gia toi da", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            viewModel.onFiltersChanged(
+                city = binding.edtCity.text?.toString().orEmpty(),
+                minPrice = minPrice,
+                maxPrice = maxPrice
+            )
+        }
+
+        binding.btnClearFilters.setOnClickListener {
+            binding.edtCity.text?.clear()
+            binding.edtMinPrice.text?.clear()
+            binding.edtMaxPrice.text?.clear()
+            viewModel.clearFilters()
         }
     }
 

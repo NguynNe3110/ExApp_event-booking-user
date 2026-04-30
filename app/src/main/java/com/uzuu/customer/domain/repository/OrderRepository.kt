@@ -5,7 +5,11 @@ import com.uzuu.customer.domain.model.Order
 import com.uzuu.customer.domain.model.PagedResult
 
 interface OrderRepository {
-    suspend fun checkout(paymentMethod: String): ApiResult<Order>
-    suspend fun checkoutSelected(paymentMethod: String, itemIds: List<Long>): ApiResult<Order>
+    suspend fun checkout(paymentMethod: String, voucherCode: String? = null): ApiResult<Order>
+    suspend fun checkoutSelected(
+        paymentMethod: String,
+        itemIds: List<Long>,
+        voucherCode: String? = null
+    ): ApiResult<Order>
     suspend fun getMyOrders(page: Int): ApiResult<PagedResult<Order>>
 }

@@ -3,8 +3,13 @@ package com.uzuu.customer.feature.middle.cart
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.uzuu.customer.core.result.ApiResult
+import com.uzuu.customer.domain.model.CartItem
+import com.uzuu.customer.domain.model.Event
 import com.uzuu.customer.domain.repository.CartRepository
+import com.uzuu.customer.domain.repository.EventRepository
 import com.uzuu.customer.domain.repository.OrderRepository
+import java.text.SimpleDateFormat
+import java.util.Locale
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -14,7 +19,8 @@ import kotlinx.coroutines.launch
 
 class CartViewModel(
     private val cartRepo: CartRepository,
-    private val orderRepo: OrderRepository
+    private val orderRepo: OrderRepository,
+    private val eventRepo: EventRepository
 ) : ViewModel() {
 
     private val _cartState = MutableStateFlow(CartUiState())
@@ -29,11 +35,13 @@ class CartViewModel(
             when (val r = cartRepo.getCart()) {
                 is ApiResult.Success -> {
                     val cart = r.data
+                    val unavailableIds = findUnavailableCartItemIds(cart.items)
                     _cartState.update {
                         it.copy(
                             isLoading = false,
                             items = cart.items,
                             totalAmount = cart.totalAmount,
+                            unavailableItemIds = unavailableIds,
                             selectedItemIds = it.selectedItemIds
                                 .filter { id -> cart.items.any { item -> item.id == id } }
                                 .toSet()
@@ -72,8 +80,13 @@ class CartViewModel(
             when (val r = cartRepo.updateCartItem(itemId, quantity)) {
                 is ApiResult.Success -> {
                     val cart = r.data
+                    val unavailableIds = findUnavailableCartItemIds(cart.items)
                     _cartState.update {
-                        it.copy(items = cart.items, totalAmount = cart.totalAmount)
+                        it.copy(
+                            items = cart.items,
+                            totalAmount = cart.totalAmount,
+                            unavailableItemIds = unavailableIds
+                        )
                     }
                 }
                 is ApiResult.Error -> _cartEvent.emit(CartUiEvent.Toast(r.message))
@@ -103,11 +116,13 @@ class CartViewModel(
                 }
             }
 
+            val unavailableIds = findUnavailableCartItemIds(lastCart)
             _cartState.update {
                 it.copy(
                     isLoading = false,
                     items = lastCart,
                     totalAmount = lastTotal,
+                    unavailableItemIds = unavailableIds,
                     selectedItemIds = emptySet()
                 )
             }
@@ -124,7 +139,7 @@ class CartViewModel(
                 is ApiResult.Success -> {
                     _cartState.update {
                         it.copy(isLoading = false, items = emptyList(),
-                            totalAmount = 0.0, selectedItemIds = emptySet())
+                            totalAmount = 0.0, unavailableItemIds = emptySet(), selectedItemIds = emptySet())
                     }
                     _cartEvent.emit(CartUiEvent.CartCleared)
                     _cartEvent.emit(CartUiEvent.Toast("Đã xóa toàn bộ giỏ hàng"))
@@ -141,15 +156,23 @@ class CartViewModel(
         _cartState.update { it.copy(selectedPayment = method) }
     }
 
+    fun onVoucherChanged(code: String) {
+        _cartState.update { it.copy(voucherCode = code.trim()) }
+    }
+
     fun onCheckout() {
         val state = _cartState.value
         if (state.items.isEmpty()) {
             viewModelScope.launch { _cartEvent.emit(CartUiEvent.Toast("Giỏ hàng đang trống")) }
             return
         }
+        if (state.unavailableItemIds.isNotEmpty()) {
+            viewModelScope.launch { _cartEvent.emit(CartUiEvent.Toast("Co ve khong con mo ban, vui long xoa khoi gio")) }
+            return
+        }
         viewModelScope.launch {
             _cartState.update { it.copy(isLoading = true) }
-            when (val r = orderRepo.checkout(state.selectedPayment)) {
+            when (val r = orderRepo.checkout(state.selectedPayment, state.voucherCode)) {
                 is ApiResult.Success -> {
                     _cartState.update { it.copy(isLoading = false) }
                     _cartEvent.emit(CartUiEvent.Toast("🎉 Đặt hàng thành công!"))
@@ -170,9 +193,13 @@ class CartViewModel(
             return
         }
         val itemIds = state.selectedItemIds.toList()
+        if (itemIds.any { it in state.unavailableItemIds }) {
+            viewModelScope.launch { _cartEvent.emit(CartUiEvent.Toast("Muc da chon co ve khong con mo ban")) }
+            return
+        }
         viewModelScope.launch {
             _cartState.update { it.copy(isLoading = true) }
-            when (val r = orderRepo.checkoutSelected(state.selectedPayment, itemIds)) {
+            when (val r = orderRepo.checkoutSelected(state.selectedPayment, itemIds, state.voucherCode)) {
                 is ApiResult.Success -> {
                     _cartState.update {
                         it.copy(isLoading = false, selectedItemIds = emptySet())
@@ -185,6 +212,90 @@ class CartViewModel(
                     _cartEvent.emit(CartUiEvent.Toast(r.message))
                 }
             }
+        }
+    }
+
+    private suspend fun findUnavailableCartItemIds(items: List<CartItem>): Set<Long> {
+        if (items.isEmpty()) return emptySet()
+
+        val cachedEvents = runCatching { eventRepo.getCachedEvents() }.getOrDefault(emptyList())
+        val eventsByName = mutableMapOf<String, List<Event>>()
+
+        return items.filter { item ->
+            val events = eventsByName.getOrPut(item.eventName) {
+                runCatching {
+                    eventRepo.searchEvents(
+                        page = 1,
+                        search = item.eventName,
+                        province = null,
+                        minPrice = null,
+                        maxPrice = null
+                    ).data
+                }.getOrElse {
+                    cachedEvents.filter { event ->
+                        event.name.equals(item.eventName, ignoreCase = true) ||
+                            event.name.contains(item.eventName, ignoreCase = true)
+                    }
+                }
+            }
+
+            val event = events.firstOrNull { event ->
+                event.ticketTypes.any { it.id == item.ticketTypeId }
+            } ?: return@filter false
+
+            val ticket = event.ticketTypes.firstOrNull { it.id == item.ticketTypeId }
+            ticket == null ||
+                ticket.remainingQuantity < item.quantity ||
+                !isEventOpenForSale(event)
+        }.map { it.id }.toSet()
+    }
+
+    private fun isEventOpenForSale(event: Event): Boolean {
+        val status = event.status.uppercase(Locale.US)
+        if (status in setOf(
+                "CANCELLED",
+                "CANCELED",
+                "COMPLETED",
+                "REJECTED",
+                "PENDING",
+                "DRAFT",
+                "INACTIVE",
+                "ENDED",
+                "CLOSED"
+            )
+        ) {
+            return false
+        }
+
+        val now = System.currentTimeMillis()
+        val saleStart = parseApiMillis(event.saleStartDate)
+        val saleEnd = parseApiMillis(event.saleEndDate)
+
+        if (saleStart != null && now < saleStart) return false
+        if (saleEnd != null && now > saleEnd) return false
+        return true
+    }
+
+    private fun parseApiMillis(value: String?): Long? {
+        if (value.isNullOrBlank()) return null
+
+        val normalized = value.replace(Regex("\\.(\\d{3})\\d+"), ".$1")
+        val patterns = listOf(
+            "yyyy-MM-dd'T'HH:mm:ss.SSSXXX",
+            "yyyy-MM-dd'T'HH:mm:ssXXX",
+            "yyyy-MM-dd'T'HH:mm:ss.SSSX",
+            "yyyy-MM-dd'T'HH:mm:ssX",
+            "yyyy-MM-dd'T'HH:mm:ss.SSS",
+            "yyyy-MM-dd'T'HH:mm:ss",
+            "yyyy-MM-dd HH:mm:ss"
+        )
+
+        return patterns.firstNotNullOfOrNull { pattern ->
+            runCatching {
+                SimpleDateFormat(pattern, Locale.US).apply {
+                    isLenient = false
+                }.parse(normalized)?.time
+            }.getOrNull()
         }
     }
 }
