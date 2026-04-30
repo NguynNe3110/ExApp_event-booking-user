@@ -58,73 +58,23 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <EditText
-                android:id="@+id/edt_city"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="42dp"
-                android:layout_marginEnd="8dp"
-                android:background="@drawable/bg_border_blue_square"
-                android:hint="Thanh pho"
-                android:paddingHorizontal="10dp"
-                android:singleLine="true"
-                android:textSize="13sp" />
-
-            <EditText
-                android:id="@+id/edt_min_price"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="42dp"
-                android:layout_marginEnd="8dp"
-                android:background="@drawable/bg_border_blue_square"
-                android:hint="Gia tu"
-                android:inputType="numberDecimal"
-                android:paddingHorizontal="10dp"
-                android:singleLine="true"
-                android:textSize="13sp" />
-
-            <EditText
-                android:id="@+id/edt_max_price"
+            <Spinner
+                android:id="@+id/spinner_city"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="42dp"
                 android:background="@drawable/bg_border_blue_square"
-                android:hint="Gia den"
-                android:inputType="numberDecimal"
-                android:paddingHorizontal="10dp"
-                android:singleLine="true"
-                android:textSize="13sp" />
-        </LinearLayout>
+                android:paddingHorizontal="10dp" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_apply_filters"
-                android:layout_width="0dp"
-                android:layout_weight="1"
+            <ImageButton
+                android:id="@+id/btn_open_filters"
+                android:layout_width="42dp"
                 android:layout_height="42dp"
-                android:layout_marginEnd="8dp"
-                android:text="Loc"
-                android:textAllCaps="false"
-                android:textColor="@android:color/white"
-                app:backgroundTint="@color/blue_primary_550"
-                app:cornerRadius="8dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_clear_filters"
-                style="@style/Widget.Material3.Button.OutlinedButton"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="42dp"
-                android:text="Xoa loc"
-                android:textAllCaps="false"
-                android:textColor="@color/blue_primary_550"
-                app:cornerRadius="8dp"
-                app:strokeColor="@color/blue_primary_550" />
+                android:layout_marginStart="8dp"
+                android:scaleType="center"
+                android:backgroundTint="@color/blue_surface_9"
+                android:src="@drawable/ic_filter_list"
+                android:contentDescription="Bộ lọc" />
         </LinearLayout>
     </LinearLayout>
 

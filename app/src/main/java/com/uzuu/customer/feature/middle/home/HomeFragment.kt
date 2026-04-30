@@ -23,7 +23,6 @@ import com.uzuu.customer.databinding.FragmentHomeBinding
 import com.uzuu.customer.domain.model.Event
 import com.uzuu.customer.feature.MainActivity
 import com.uzuu.customer.ui.adapter.CategoryAdapter
-import com.uzuu.customer.ui.adapter.EventAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -34,7 +33,7 @@ class HomeFragment : Fragment() {
     val binding get() = _binding!!
 
     private lateinit var categoryAdapter: CategoryAdapter
-    private lateinit var eventAdapter: EventAdapter
+    private lateinit var categorySectionAdapter: com.uzuu.customer.ui.adapter.CategorySectionAdapter
 
     private val viewModel: HomeViewModel by viewModels {
         val eventRepo    = (requireActivity() as MainActivity).container.eventRepo
@@ -85,12 +84,18 @@ class HomeFragment : Fragment() {
             setHasFixedSize(true)
         }
 
-        eventAdapter = EventAdapter { event ->
-            showBottomSheet(event)
-        }
+        categorySectionAdapter = com.uzuu.customer.ui.adapter.CategorySectionAdapter(
+            onEventClick = { event -> showBottomSheet(event) },
+            onViewMoreClick = { categoryName ->
+                // select category by name if exists
+                val cat = viewModel.homeState.value.categories.find { it.name == categoryName }
+                if (cat != null) viewModel.onCategorySelected(cat)
+            }
+        )
+
         binding.recyclerEvent.apply {
             layoutManager = LinearLayoutManager(context)
-            adapter = eventAdapter
+            adapter = categorySectionAdapter
             setHasFixedSize(false)
         }
     }
@@ -102,25 +107,27 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupFilters() {
-        binding.btnApplyFilters.setOnClickListener {
-            val minPrice = binding.edtMinPrice.text?.toString()?.trim()?.toDoubleOrNull()
-            val maxPrice = binding.edtMaxPrice.text?.toString()?.trim()?.toDoubleOrNull()
-            if (minPrice != null && maxPrice != null && minPrice > maxPrice) {
-                Toast.makeText(context, "Gia toi thieu khong duoc lon hon gia toi da", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+        // setup city spinner
+        val provinces = ProvinceData.VIETNAM_PROVINCES
+        val adapter = android.widget.ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, provinces)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.spinnerCity.adapter = adapter
+
+        binding.spinnerCity.setSelection(0)
+        binding.spinnerCity.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: android.widget.AdapterView<*>, view: View?, position: Int, id: Long) {
+                val city = if (position == 0) "" else provinces[position]
+                viewModel.onFiltersChanged(city = city, minPrice = null, maxPrice = null)
             }
-            viewModel.onFiltersChanged(
-                city = binding.edtCity.text?.toString().orEmpty(),
-                minPrice = minPrice,
-                maxPrice = maxPrice
-            )
+
+            override fun onNothingSelected(parent: android.widget.AdapterView<*>) {}
         }
 
-        binding.btnClearFilters.setOnClickListener {
-            binding.edtCity.text?.clear()
-            binding.edtMinPrice.text?.clear()
-            binding.edtMaxPrice.text?.clear()
-            viewModel.clearFilters()
+        binding.btnOpenFilters.setOnClickListener {
+            val bottom = FilterBottomSheet { city, minPrice, maxPrice ->
+                viewModel.onFiltersChanged(city = city, minPrice = minPrice, maxPrice = maxPrice)
+            }
+            bottom.show(parentFragmentManager, "home_filter_sheet")
         }
     }
 
@@ -129,7 +136,22 @@ class HomeFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.homeState.collect { state ->
                     categoryAdapter.submitList(state.categories)
-                    eventAdapter.submitList(state.events)
+
+                    // prepare grouped list and append suggestion section if present
+                    val grouped = state.groupedEvents.toMutableList()
+                    if (state.suggestionEvents.isNotEmpty()) {
+                        grouped.add(
+                            com.uzuu.customer.feature.middle.home.CategoryWithEvents(
+                                categoryId = -2,
+                                categoryName = "Bạn có thể thích",
+                                displayedEvents = state.suggestionEvents,
+                                totalEventCount = state.suggestionEvents.size,
+                                hasMoreEvents = false
+                            )
+                        )
+                    }
+
+                    categorySectionAdapter.submitList(grouped)
                 }
             }
         }

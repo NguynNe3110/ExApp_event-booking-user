@@ -72,6 +72,8 @@ class HomeViewModel(
                     categories = categories,
                     allEvents = events,
                     events = events,
+                    groupedEvents = getGroupedEventsForHome(events).first,
+                    suggestionEvents = getGroupedEventsForHome(events).second,
                     isLastPage = eventsResult?.isLast ?: true
                 )
             }
@@ -91,15 +93,19 @@ class HomeViewModel(
             val updatedCategories = state.categories.map {
                 it.copy(isSelected = it.id == category.id)
             }
+            val filtered = filterForVisibleList(
+                events = state.allEvents,
+                categoryId = category.id,
+                categories = updatedCategories,
+                state = state
+            )
+
             state.copy(
                 categories = updatedCategories,
                 selectedCategoryId = category.id,
-                events = filterForVisibleList(
-                    events = state.allEvents,
-                    categoryId = category.id,
-                    categories = updatedCategories,
-                    state = state
-                )
+                events = filtered,
+                groupedEvents = getGroupedEventsForHome(filtered).first,
+                suggestionEvents = getGroupedEventsForHome(filtered).second
             )
         }
     }
@@ -107,14 +113,17 @@ class HomeViewModel(
     fun onSearch(query: String) {
         _homeState.update { state ->
             val nextState = state.copy(searchQuery = query)
+            val filtered = filterForVisibleList(
+                events = nextState.allEvents,
+                categoryId = nextState.selectedCategoryId,
+                categories = nextState.categories,
+                state = nextState,
+                forceLocalFilters = true
+            )
             nextState.copy(
-                events = filterForVisibleList(
-                    events = nextState.allEvents,
-                    categoryId = nextState.selectedCategoryId,
-                    categories = nextState.categories,
-                    state = nextState,
-                    forceLocalFilters = true
-                )
+                events = filtered,
+                groupedEvents = getGroupedEventsForHome(filtered).first,
+                suggestionEvents = getGroupedEventsForHome(filtered).second
             )
         }
 
@@ -190,15 +199,19 @@ class HomeViewModel(
                 currentPage = page + 1
                 _homeState.update { state ->
                     val allEvents = if (append) state.allEvents + result.data else result.data
+                    val filtered = filterForVisibleList(
+                        events = allEvents,
+                        categoryId = state.selectedCategoryId,
+                        categories = state.categories,
+                        state = state
+                    )
+
                     state.copy(
                         isLoading = false,
                         allEvents = allEvents,
-                        events = filterForVisibleList(
-                            events = allEvents,
-                            categoryId = state.selectedCategoryId,
-                            categories = state.categories,
-                            state = state
-                        ),
+                        events = filtered,
+                        groupedEvents = getGroupedEventsForHome(filtered).first,
+                        suggestionEvents = getGroupedEventsForHome(filtered).second,
                         isLastPage = result.isLast
                     )
                 }
@@ -288,4 +301,39 @@ class HomeViewModel(
             state.minPriceFilter != null ||
             state.maxPriceFilter != null
     }
+    fun getGroupedEventsForHome(events: List<Event>): Pair<List<CategoryWithEvents>, List<Event>> {
+        // Group events by category name
+        val eventsByCategory = events.groupBy { it.categoryName }
+
+        // Create CategoryWithEvents for each category with events
+        val groupedByCategory = eventsByCategory.entries
+            .filter { it.value.isNotEmpty() }  // Only show categories with events
+            .map { (categoryName, categoryEvents) ->
+                // Determine how many to display based on count
+                val displayCount = when {
+                    categoryEvents.size == 1 -> 0  // Single events go to suggestions
+                    categoryEvents.size <= 3 -> 2
+                    else -> 4
+                }
+
+                CategoryWithEvents(
+                    categoryId = categoryEvents.first().id,  // Using event id as temp category id
+                    categoryName = categoryName,
+                    displayedEvents = categoryEvents.take(displayCount),
+                    totalEventCount = categoryEvents.size,
+                    hasMoreEvents = categoryEvents.size > displayCount
+                )
+            }
+            .filter { it.displayedEvents.isNotEmpty() }
+            .sortedByDescending { it.displayedEvents.size }  // Show categories with most events first
+
+        // Collect single events for "you might like" section
+        val suggestionEvents = eventsByCategory.entries
+            .filter { it.value.size == 1 }
+            .flatMap { it.value }
+            .take(4)  // Limit to 4 suggestion events
+
+        return Pair(groupedByCategory, suggestionEvents)
+    }
+
 }

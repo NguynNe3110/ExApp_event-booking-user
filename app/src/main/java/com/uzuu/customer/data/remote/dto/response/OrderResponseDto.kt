@@ -1,7 +1,7 @@
 package com.uzuu.customer.data.remote.dto.response
 
 data class OrderResponseDto(
-    val id: Long,
+    val id: String,
     val totalAmount: Double,
     val paymentMethod: String,
     val paymentStatus: String,   // PENDING | PAID | FAILED

@@ -1,0 +1,41 @@
+package com.uzuu.customer.feature.middle.home
+
+object ProvinceData {
+    val VIETNAM_PROVINCES = listOf(
+        "Tất cả tỉnh/thành",
+        "Hà Nội",
+        "Hồ Chí Minh",
+        "Đà Nẵng",
+        "Hải Phòng",
+        "Cần Thơ",
+        "Nghệ An",
+        "Thanh Hóa",
+        "Thừa Thiên Huế",
+        "Quảng Ninh",
+        "Khánh Hòa",
+        "Bình Dương",
+        "Đồng Nai",
+        "Bà Rịa - Vũng Tàu",
+        "Bình Thuận",
+        "Ninh Bình",
+        "Nam Định",
+        "Thái Bình",
+        "Quảng Nam",
+        "Quảng Ngãi",
+        "Bình Phước",
+        "Kon Tum",
+        "Gia Lai",
+        "Lâm Đồng",
+        "Đắk Lắk",
+        "Đắk Nông",
+        "Phú Yên",
+        "Sóc Trăng",
+        "An Giang",
+        "Kiên Giang",
+        "Bạc Liêu",
+        "Hậu Giang",
+        "Long An",
+        "Tiền Giang",
+        "Vĩnh Phúc"
+    )
+}
