@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "orders")
 data class OrderEntity(
     @PrimaryKey
-    val id: Long,
+    val id: String,
     val totalAmount: Double,
     val paymentMethod: String,
     val paymentStatus: String,

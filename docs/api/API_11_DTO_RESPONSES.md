@@ -56,7 +56,7 @@
 
 ### OrderResponse
 
-- `id`: Long
+- `id`: String
 - `organizerAmount`: BigDecimal
 - `platformFeeRate`: Float
 - `serviceFee`: BigDecimal

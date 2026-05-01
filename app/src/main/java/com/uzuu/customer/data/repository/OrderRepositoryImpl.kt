@@ -82,7 +82,7 @@ class OrderRepositoryImpl(
 }
 
 private fun OrderResponseDto.toDomain() = Order(
-    id            = id.toLong(),
+    id            = id,
     totalAmount   = totalAmount,
     paymentMethod = paymentMethod,
     paymentStatus = paymentStatus,
