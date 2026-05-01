@@ -12,7 +12,7 @@ import com.uzuu.customer.feature.middle.home.CategoryWithEvents
 
 class CategorySectionAdapter(
     private val onEventClick: (com.uzuu.customer.domain.model.Event) -> Unit,
-    private val onViewMoreClick: (String) -> Unit
+    private val onViewMoreClick: (Long, String) -> Unit
 ) : ListAdapter<CategoryWithEvents, CategorySectionAdapter.ViewHolder>(DIFF) {
 
     companion object {
@@ -46,7 +46,7 @@ class CategorySectionAdapter(
         fun bind(item: CategoryWithEvents) {
             binding.includeHeader.tvCategoryName.text = item.categoryName
             binding.includeHeader.btnViewMore.visibility = if (item.hasMoreEvents) View.VISIBLE else View.GONE
-            binding.includeHeader.btnViewMore.setOnClickListener { onViewMoreClick(item.categoryName) }
+            binding.includeHeader.btnViewMore.setOnClickListener { onViewMoreClick(item.categoryId, item.categoryName) }
 
             innerAdapter.submitList(item.displayedEvents)
         }

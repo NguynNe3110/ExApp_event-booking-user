@@ -14,6 +14,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavOptions
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.uzuu.customer.R
@@ -78,18 +79,18 @@ class HomeFragment : Fragment() {
         categoryAdapter = CategoryAdapter { clickedCategory ->
             viewModel.onCategorySelected(clickedCategory)
         }
-        binding.recyclerCategory.apply {
-            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-            adapter = categoryAdapter
-            setHasFixedSize(true)
-        }
+        // hide category strip on the event screen per product request
+        binding.txtCategoryTitle.visibility = View.GONE
+        binding.recyclerCategory.visibility = View.GONE
 
         categorySectionAdapter = com.uzuu.customer.ui.adapter.CategorySectionAdapter(
             onEventClick = { event -> showBottomSheet(event) },
-            onViewMoreClick = { categoryName ->
-                // select category by name if exists
-                val cat = viewModel.homeState.value.categories.find { it.name == categoryName }
-                if (cat != null) viewModel.onCategorySelected(cat)
+            onViewMoreClick = { categoryId, categoryName ->
+                val bundle = androidx.core.os.bundleOf(
+                    "categoryId" to categoryId,
+                    "categoryName" to categoryName
+                )
+                findNavController().navigate(R.id.action_homeFragment_to_categoryEventsFragment, bundle)
             }
         )
 

@@ -8,8 +8,11 @@
 
 - GET /events?page={page}&size={size}
 - GET /events/search?page={page}&size={size}
-    - Query filters: search, name, province, provinceCode, minPrice, maxPrice, startDate, endDate
+    - Query filters: keyword/search, categoryId, province/provinceCode, minPrice, maxPrice, startDate, endDate
     - Response: ApiResponse<Page<EventResponse>>
+
+    - Lấy sự kiện theo danh mục: truyền `categoryId={id}` vào `/events/search`
+    - Ví dụ: `/events/search?page=1&size=10&categoryId=3`
 
 - GET /events/{id}
     - Response: ApiResponse<EventResponse>
@@ -44,6 +47,7 @@ Note:
 
 - `/events/{id}` expects a numeric `id` (Long). Do not pass a slug or string there (e.g. `blog-news` will fail conversion to Long).
 - Use `/events/blog-news` to get the blog/news list and `/blog/posts/{slug}` to retrieve blog post details by slug.
+- Use `/events/search` with `categoryId` to filter events by category; there is no separate endpoint like `/events/category/{id}` in the current code.
 
 Examples:
 

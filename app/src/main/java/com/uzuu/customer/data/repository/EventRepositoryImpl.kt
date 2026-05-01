@@ -83,7 +83,8 @@ class EventRepositoryImpl(
         search: String?,
         province: String?,
         minPrice: Double?,
-        maxPrice: Double?
+        maxPrice: Double?,
+        categoryId: Long?
     ): PagedResult<Event> {
         return try {
             val response = eventRemote.searchEvents(
@@ -91,7 +92,8 @@ class EventRepositoryImpl(
                 search = search?.takeIf { it.isNotBlank() },
                 province = province?.takeIf { it.isNotBlank() },
                 minPrice = minPrice,
-                maxPrice = maxPrice
+                maxPrice = maxPrice,
+                categoryId = categoryId
             )
             val pageData = response.result
             val events = pageData.content.map { it.eventDtoToDomain() }
@@ -110,7 +112,10 @@ class EventRepositoryImpl(
             if (page == 1) {
                 val cached = getCachedEvents()
                 if (cached.isNotEmpty()) {
-                    val filtered = cached.filterBySearchParams(search, province, minPrice, maxPrice)
+                    var filtered = cached.filterBySearchParams(search, province, minPrice, maxPrice)
+                    if (categoryId != null) {
+                        filtered = filtered.filter { it.categoryId == categoryId }
+                    }
                     return PagedResult(
                         data = filtered,
                         page = 0,

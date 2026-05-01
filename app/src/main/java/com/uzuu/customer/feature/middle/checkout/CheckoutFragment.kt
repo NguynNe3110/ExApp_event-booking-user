@@ -65,7 +65,7 @@ class CheckoutFragment : Fragment() {
     }
 
     private fun setupPayment() {
-        val methods = listOf("BANKING", "MOMO", "VNPAY")
+        val methods = listOf("MOMO", "VNPAY")
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, methods)
         binding.dropdownPayment.setAdapter(adapter)
         binding.dropdownPayment.setText(methods.first(), false)

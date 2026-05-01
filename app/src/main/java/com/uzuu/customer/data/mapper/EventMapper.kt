@@ -11,6 +11,7 @@ private val gson = Gson()
 fun EventResponseDto.eventDtoToDomain(): Event {
     return Event(
         id            = id,
+        categoryId    = category?.id ?: -1,
         name          = name.orEmpty(),
         categoryName  = categoryName ?: category?.name.orEmpty(),
         location      = listOfNotNull(location, address, provinceName ?: province)
@@ -42,6 +43,7 @@ fun EventEntity.toDomain(): Event {
     }
     return Event(
         id            = id,
+        categoryId    = categoryId,
         name          = name,
         categoryName  = categoryName,
         location      = location,
@@ -59,6 +61,7 @@ fun EventEntity.toDomain(): Event {
 fun Event.toEntity(): EventEntity {
     return EventEntity(
         id            = id,
+        categoryId    = categoryId,
         name          = name,
         categoryName  = categoryName,
         location      = location,

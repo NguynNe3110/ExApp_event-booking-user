@@ -17,7 +17,8 @@ class EventRemoteDataSource(
         search: String?,
         province: String?,
         minPrice: Double?,
-        maxPrice: Double?
+        maxPrice: Double?,
+        categoryId: Long? = null
     ): BaseResponseDto<PageResponse<EventResponseDto>> {
         return eventApi.searchEvents(
             page = page,
@@ -25,7 +26,8 @@ class EventRemoteDataSource(
             search = search,
             province = province,
             minPrice = minPrice,
-            maxPrice = maxPrice
+            maxPrice = maxPrice,
+            categoryId = categoryId
         )
     }
 }

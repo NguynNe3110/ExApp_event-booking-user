@@ -72,8 +72,8 @@ class HomeViewModel(
                     categories = categories,
                     allEvents = events,
                     events = events,
-                    groupedEvents = getGroupedEventsForHome(events).first,
-                    suggestionEvents = getGroupedEventsForHome(events).second,
+                    groupedEvents = getGroupedEventsForHome(events, categories).first,
+                    suggestionEvents = getGroupedEventsForHome(events, categories).second,
                     isLastPage = eventsResult?.isLast ?: true
                 )
             }
@@ -104,8 +104,8 @@ class HomeViewModel(
                 categories = updatedCategories,
                 selectedCategoryId = category.id,
                 events = filtered,
-                groupedEvents = getGroupedEventsForHome(filtered).first,
-                suggestionEvents = getGroupedEventsForHome(filtered).second
+                groupedEvents = getGroupedEventsForHome(filtered, updatedCategories).first,
+                suggestionEvents = getGroupedEventsForHome(filtered, updatedCategories).second
             )
         }
     }
@@ -122,8 +122,8 @@ class HomeViewModel(
             )
             nextState.copy(
                 events = filtered,
-                groupedEvents = getGroupedEventsForHome(filtered).first,
-                suggestionEvents = getGroupedEventsForHome(filtered).second
+                groupedEvents = getGroupedEventsForHome(filtered, nextState.categories).first,
+                suggestionEvents = getGroupedEventsForHome(filtered, nextState.categories).second
             )
         }
 
@@ -210,8 +210,8 @@ class HomeViewModel(
                         isLoading = false,
                         allEvents = allEvents,
                         events = filtered,
-                        groupedEvents = getGroupedEventsForHome(filtered).first,
-                        suggestionEvents = getGroupedEventsForHome(filtered).second,
+                        groupedEvents = getGroupedEventsForHome(filtered, state.categories).first,
+                        suggestionEvents = getGroupedEventsForHome(filtered, state.categories).second,
                         isLastPage = result.isLast
                     )
                 }
@@ -301,7 +301,7 @@ class HomeViewModel(
             state.minPriceFilter != null ||
             state.maxPriceFilter != null
     }
-    fun getGroupedEventsForHome(events: List<Event>): Pair<List<CategoryWithEvents>, List<Event>> {
+    fun getGroupedEventsForHome(events: List<Event>, categories: List<CategoryItem>): Pair<List<CategoryWithEvents>, List<Event>> {
         // Group events by category name
         val eventsByCategory = events.groupBy { it.categoryName }
 
@@ -317,7 +317,7 @@ class HomeViewModel(
                 }
 
                 CategoryWithEvents(
-                    categoryId = categoryEvents.first().id,  // Using event id as temp category id
+                    categoryId = categories.find { it.name == categoryName }?.id?.toLong() ?: -1L,
                     categoryName = categoryName,
                     displayedEvents = categoryEvents.take(displayCount),
                     totalEventCount = categoryEvents.size,

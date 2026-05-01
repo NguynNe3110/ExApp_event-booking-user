@@ -20,6 +20,7 @@ interface EventApi {
         @Query("search") search: String? = null,
         @Query("province") province: String? = null,
         @Query("minPrice") minPrice: Double? = null,
-        @Query("maxPrice") maxPrice: Double? = null
+        @Query("maxPrice") maxPrice: Double? = null,
+        @Query("categoryId") categoryId: Long? = null
     ): BaseResponseDto<PageResponse<EventResponseDto>>
 }

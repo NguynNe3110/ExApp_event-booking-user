@@ -10,6 +10,7 @@ import com.uzuu.customer.data.local.Converters
 data class EventEntity(
     @PrimaryKey
     val id: Long,
+    val categoryId: Long = -1,
     val name: String,
     val categoryName: String,
     val location: String,

@@ -10,7 +10,8 @@ interface EventRepository {
         search: String?,
         province: String?,
         minPrice: Double?,
-        maxPrice: Double?
+        maxPrice: Double?,
+        categoryId: Long? = null
     ): PagedResult<Event>
     suspend fun getCachedEvents(): List<Event>
 }
