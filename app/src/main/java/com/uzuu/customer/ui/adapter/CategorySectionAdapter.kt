@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.uzuu.customer.databinding.ItemCategorySectionBinding
-import com.uzuu.customer.feature.middle.home.CategoryWithEvents
+import com.uzuu.customer.feature.middle.home.eventExtra.CategoryWithEvents
 
 class CategorySectionAdapter(
     private val onEventClick: (com.uzuu.customer.domain.model.Event) -> Unit,

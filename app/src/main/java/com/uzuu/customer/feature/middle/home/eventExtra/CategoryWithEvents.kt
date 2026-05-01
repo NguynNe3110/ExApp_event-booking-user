@@ -1,4 +1,4 @@
-package com.uzuu.customer.feature.middle.home
+package com.uzuu.customer.feature.middle.home.eventExtra
 
 import com.uzuu.customer.domain.model.Event
 

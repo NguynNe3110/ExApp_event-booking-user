@@ -23,6 +23,7 @@ import com.uzuu.customer.data.session.SessionManager
 import com.uzuu.customer.databinding.FragmentHomeBinding
 import com.uzuu.customer.domain.model.Event
 import com.uzuu.customer.feature.MainActivity
+import com.uzuu.customer.feature.middle.home.eventExtra.CategoryWithEvents
 import com.uzuu.customer.ui.adapter.CategoryAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -81,7 +82,6 @@ class HomeFragment : Fragment() {
         }
         // hide category strip on the event screen per product request
         binding.txtCategoryTitle.visibility = View.GONE
-        binding.recyclerCategory.visibility = View.GONE
 
         categorySectionAdapter = com.uzuu.customer.ui.adapter.CategorySectionAdapter(
             onEventClick = { event -> showBottomSheet(event) },
@@ -143,7 +143,7 @@ class HomeFragment : Fragment() {
                     val grouped = state.groupedEvents.toMutableList()
                     if (state.suggestionEvents.isNotEmpty()) {
                         grouped.add(
-                            com.uzuu.customer.feature.middle.home.CategoryWithEvents(
+                            CategoryWithEvents(
                                 categoryId = -2,
                                 categoryName = "Bạn có thể thích",
                                 displayedEvents = state.suggestionEvents,

@@ -1,18 +1,19 @@
-package com.uzuu.customer.feature.middle.home
+package com.uzuu.customer.feature.middle.home.eventExtra
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.uzuu.customer.R
 import com.uzuu.customer.databinding.FragmentCategoryEventsBinding
 import com.uzuu.customer.feature.MainActivity
 import com.uzuu.customer.ui.adapter.EventAdapter
 import kotlinx.coroutines.launch
-import com.uzuu.customer.R
 
 class CategoryEventsFragment : Fragment() {
 
@@ -40,7 +41,7 @@ class CategoryEventsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         adapter = EventAdapter { event ->
             // navigate to detail
-            val bundle = androidx.core.os.bundleOf("event" to event)
+            val bundle = bundleOf("event" to event)
             findNavController().navigate(R.id.action_homeFragment_to_eventDetail, bundle)
         }
         binding.recyclerCategoryEvents.apply {

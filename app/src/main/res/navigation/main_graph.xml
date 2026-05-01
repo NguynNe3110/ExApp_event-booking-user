@@ -76,7 +76,7 @@
 
     <fragment
         android:id="@+id/eventDetailFragment"
-        android:name="com.uzuu.customer.feature.middle.home.EventDetailFragment"
+        android:name="com.uzuu.customer.feature.middle.home.eventDetail.EventDetailFragment"
         android:label="Chi tiết sự kiện">
         <argument
             android:name="event"
@@ -85,7 +85,7 @@
 
     <fragment
         android:id="@+id/categoryEventsFragment"
-        android:name="com.uzuu.customer.feature.middle.home.CategoryEventsFragment"
+        android:name="com.uzuu.customer.feature.middle.home.eventExtra.CategoryEventsFragment"
         android:label="Sự kiện theo danh mục">
         <argument
             android:name="categoryId"

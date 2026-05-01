@@ -6,6 +6,7 @@ import com.uzuu.customer.domain.model.CategoryItem
 import com.uzuu.customer.domain.model.Event
 import com.uzuu.customer.domain.repository.CategoryRepository
 import com.uzuu.customer.domain.repository.EventRepository
+import com.uzuu.customer.feature.middle.home.eventExtra.CategoryWithEvents
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay

@@ -2,6 +2,7 @@ package com.uzuu.customer.feature.middle.home
 
 import com.uzuu.customer.domain.model.CategoryItem
 import com.uzuu.customer.domain.model.Event
+import com.uzuu.customer.feature.middle.home.eventExtra.CategoryWithEvents
 
 data class HomeUiState(
     val isLoading: Boolean = false,

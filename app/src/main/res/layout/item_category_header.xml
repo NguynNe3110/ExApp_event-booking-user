@@ -26,4 +26,8 @@
         android:textColor="@color/blue_primary_550"
         android:textAllCaps="false" />
 
+    <ImageView
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/ic_arrow_big"/>
 </LinearLayout>

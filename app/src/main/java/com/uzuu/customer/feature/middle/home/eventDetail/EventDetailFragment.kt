@@ -1,4 +1,4 @@
-package com.uzuu.customer.feature.middle.home
+package com.uzuu.customer.feature.middle.home.eventDetail
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,6 +9,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.uzuu.customer.R
 import com.uzuu.customer.databinding.FragmentEventDetailBinding
 import com.uzuu.customer.domain.model.Event
 import com.uzuu.customer.ui.adapter.CategoryTicketAdapter
@@ -36,7 +37,7 @@ class EventDetailFragment : Fragment() {
     }
 
     private fun bindData(event: Event) {
-        val imageUrl = EventAdapter.fixImageUrl(event.imageUrls.firstOrNull())
+        val imageUrl = EventAdapter.Companion.fixImageUrl(event.imageUrls.firstOrNull())
         Glide.with(binding.imgEventDetail)
             .load(imageUrl)
             .centerCrop()
@@ -52,11 +53,11 @@ class EventDetailFragment : Fragment() {
         binding.txtDescription.text     = event.description?.ifBlank { "Chưa có mô tả." } ?: "Chưa có mô tả."
 
         val (statusLabel, statusColor) = when (event.status) {
-            "PENDING"    -> "● Sắp diễn ra"  to requireContext().getColor(com.uzuu.customer.R.color.event_upcoming)
-            "ON_SALE"    -> "● Đang bán vé"  to requireContext().getColor(com.uzuu.customer.R.color.event_on_sale)
-            "ONGOING"    -> "● Đang diễn ra" to requireContext().getColor(com.uzuu.customer.R.color.event_ongoing)
-            "COMPLETED"  -> "● Đã kết thúc"  to requireContext().getColor(com.uzuu.customer.R.color.event_completed)
-            else         -> "● ${event.status}" to requireContext().getColor(com.uzuu.customer.R.color.blue_text_secondary)
+            "PENDING"    -> "● Sắp diễn ra"  to requireContext().getColor(R.color.event_upcoming)
+            "ON_SALE"    -> "● Đang bán vé"  to requireContext().getColor(R.color.event_on_sale)
+            "ONGOING"    -> "● Đang diễn ra" to requireContext().getColor(R.color.event_ongoing)
+            "COMPLETED"  -> "● Đã kết thúc"  to requireContext().getColor(R.color.event_completed)
+            else         -> "● ${event.status}" to requireContext().getColor(R.color.blue_text_secondary)
         }
         binding.txtStatus.text      = statusLabel
         binding.txtStatus.setTextColor(statusColor)

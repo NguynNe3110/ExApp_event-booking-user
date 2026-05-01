@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.uzuu.customer.databinding.ItemCategoryHeaderBinding
 import com.uzuu.customer.databinding.ItemEventInGroupBinding
 import com.uzuu.customer.domain.model.Event
-import com.uzuu.customer.feature.middle.home.CategoryWithEvents
+import com.uzuu.customer.feature.middle.home.eventExtra.CategoryWithEvents
 
 sealed class CategoryEventItem {
     data class CategoryHeader(

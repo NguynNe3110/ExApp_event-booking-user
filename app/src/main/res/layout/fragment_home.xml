@@ -85,7 +85,7 @@
         android:textSize="24sp"
         android:textStyle="bold"
         android:paddingLeft="12dp"
-        android:paddingBottom="12dp"
+        android:paddingBottom="8dp"
         android:layout_marginTop="12dp"
         android:textColor="@color/blue_primary_650"
         android:text="Danh mục"/>
@@ -102,15 +102,6 @@
         android:paddingTop="4dp"
         android:paddingBottom="8dp"
         android:orientation="vertical">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_category"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:clipToPadding="false"
-            android:clipChildren="false"
-            android:paddingHorizontal="8dp"
-            tools:listitem="@layout/item_category_in_home"/>
 
     </LinearLayout>
 
@@ -135,7 +126,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="12dp"
+        android:padding="8dp"
         android:orientation="vertical">
 
         <androidx.recyclerview.widget.RecyclerView
