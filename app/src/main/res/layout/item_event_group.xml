@@ -45,9 +45,9 @@
                 android:layout_marginTop="4dp"
                 android:ellipsize="end"
                 android:maxLines="2"
-                android:text="Tên sự kiện"
+                android:text="Tên sự kiện Tên sự kiện Tên sự kiện Tên sự kiện Tên sự kiện Tên sự kiện Tên sự kiện Tên sự kiện Tên sự kiện Tên sự kiện Tên sự kiện Tên sự kiện "
                 android:textColor="@color/blue_text_dark"
-                android:textSize="13sp"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -57,7 +57,7 @@
                 android:layout_marginTop="6dp"
                 android:text="Từ 200.000 đ"
                 android:textColor="@color/blue_primary_450"
-                android:textSize="12sp"
+                android:textSize="16sp"
                 android:textStyle="bold" />
 
             <LinearLayout

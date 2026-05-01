@@ -34,6 +34,7 @@ class EventSmallAdapter(
 
     inner class ViewHolder(private val binding: ItemEventGroupBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(event: Event) {
+            binding.txtStatusEnd.text = event.status
             binding.txtNameEventGroup.text = event.name
             binding.txtDateEventGroup.text = event.startTime ?: ""
             binding.txtPriceEventGroup.text = event.ticketTypes.minOfOrNull { it.price }

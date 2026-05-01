@@ -36,8 +36,9 @@
 
 ### Blog sync
 
-- GET /events/blog-news
-    - Response: ApiResponse<List<BlogEventResponse>>
+- GET /events/blog-news?page={page}&size={size}
+    - Query params: `page` (default 0), `size` (default 10)
+    - Response: ApiResponse<Page<BlogEventResponse>>
 
 ## CategoryController (base: /categories)
 

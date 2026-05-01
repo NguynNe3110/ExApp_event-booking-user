@@ -126,6 +126,7 @@
 - `saleEndDate`: LocalDateTime
 - `descriptionStatus`: String
 - `imageUrl`: String
+- `categoryName`: String
 
 ## Statistics
 
@@ -189,3 +190,25 @@
 - `eventId`: Long
 - `eventName`: String
 - `creatorName`: String
+
+## Blog
+
+### BlogPostResponse
+
+- `id`: Long
+- `title`: String
+- `slug`: String
+- `summary`: String
+- `content`: String
+- `thumbnail`: String
+- `authorName`: String
+- `status`: String
+- `publishedAt`: LocalDateTime
+- `createdAt`: LocalDateTime
+- `tags`: Set<BlogTagResponse>
+
+### BlogTagResponse
+
+- `id`: Long
+- `name`: String
+- `slug`: String
