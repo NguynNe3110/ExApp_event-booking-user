@@ -14,12 +14,6 @@
 - GET /statistics-revenue/admin
     - Response: ApiResponse<EventRevenueStatsAdminResponse>
 
-## Blog / Events (blog endpoints)
-
-- GET /events/blog-news
-    - Query params: `page` (default 0), `size` (default 10)
-    - Response: ApiResponse<Page<BlogEventResponse>>
-
 ## BlogController (base: /blog)
 
 - GET /blog/posts?page={page}&size={size}
@@ -69,8 +63,8 @@
 Notes:
 
 - Path parameter types:
-    - `/events/{id}` — `id` is numeric (Long). Requests like `/events/blog-news` will be matched by other explicit mappings; if a non-numeric value reaches `{id}` binding, Spring will fail conversion.
     - `/blog/posts/{slug}` — `slug` is a String (use for blog post lookup by slug).
+    - `/blog/organizer/posts`, `/blog/admin/posts`, `/blog/admin/posts/{id}` — use `id` (numeric Long) for admin operations.
 
 Example responses (abbreviated):
 

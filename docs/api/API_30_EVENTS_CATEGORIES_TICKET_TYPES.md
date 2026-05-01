@@ -6,7 +6,6 @@
     - Request: EventRequest (@ModelAttribute)
     - Response: ApiResponse<EventResponse>
 
-- GET /events?page={page}&size={size}
 - GET /events/search?page={page}&size={size}
     - Query filters: keyword/search, categoryId, province/provinceCode, minPrice, maxPrice, startDate, endDate
     - Response: ApiResponse<Page<EventResponse>>
@@ -34,26 +33,18 @@
 - GET /events/organizer/my-events?page={page}&size={size}
     - Response: ApiResponse<Page<EventResponse>>
 
-- GET /events/organizer/stats
-    - Response: ApiResponse<OrganizerStatsResponse>
-
-### Blog sync
-
-- GET /events/blog-news?page={page}&size={size}
-    - Query params: `page` (default 0), `size` (default 10)
-    - Response: ApiResponse<Page<BlogEventResponse>>
-
 Note:
 
-- `/events/{id}` expects a numeric `id` (Long). Do not pass a slug or string there (e.g. `blog-news` will fail conversion to Long).
-- Use `/events/blog-news` to get the blog/news list and `/blog/posts/{slug}` to retrieve blog post details by slug.
-- Use `/events/search` with `categoryId` to filter events by category; there is no separate endpoint like `/events/category/{id}` in the current code.
+- `/events/{id}` expects a numeric `id` (Long).
+- Use `/events/search` with `categoryId` to filter events by category.
+- Blog posts are available in `/blog/*` endpoints (see [Statistics & Blog APIs](API_50_STATISTICS_BLOG.md)).
 
 Examples:
 
-- GET list (blog/news): `/events/blog-news?page=0&size=10`
-- GET event by id: `/events/123` (where `123` is numeric event id)
-- GET blog post by slug: `/blog/posts/my-event-announcement`
+- Search events: `/events/search?page=1&size=10&keyword=music`
+- Filter by category: `/events/search?page=1&size=10&categoryId=3`
+- Get event by id: `/events/123` (where `123` is numeric event id)
+- Get blog post by slug: `/blog/posts/my-event-announcement`
 
 ## CategoryController (base: /categories)
 
