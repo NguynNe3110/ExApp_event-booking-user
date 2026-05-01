@@ -102,11 +102,11 @@ class CheckoutFragment : Fragment() {
                     binding.tvSubtotal.text = money(state.subtotal)
                     binding.tvDiscount.text = "-${money(state.discountAmount)}"
                     binding.tvPayable.text = money(state.payableAmount)
-                    binding.tvVoucherCode.text = state.selectedVoucher?.code ?: "Chon voucher"
+                    binding.tvVoucherCode.text = state.selectedVoucher?.code ?: "Chọn voucher"
                     binding.tvVoucherOrganizer.text = state.selectedVoucher?.creatorName
                         ?.takeIf { it.isNotBlank() }
                         ?.let { "Organizer: $it" }
-                        ?: "Chua ap dung ma giam gia"
+                        ?: "Chưa áp dụng mã giảm giá"
                     binding.dropdownPayment.setText(state.selectedPayment, false)
                     binding.btnCheckout.isEnabled = !state.isLoading && state.items.isNotEmpty()
                 }

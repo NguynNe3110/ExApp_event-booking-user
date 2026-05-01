@@ -24,13 +24,13 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_back"
-                style="@style/Widget.Material3.Button.TextButton"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
                 android:padding="0dp"
-                android:text="&lt;"
+                android:text="‹"
                 android:textColor="@color/blue_text_dark"
                 android:textSize="20sp" />
 
@@ -38,7 +38,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Xac nhan thanh toan"
+                android:text="Xác nhận thanh toán"
                 android:textColor="@color/blue_text_dark"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -68,7 +68,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Ve da chon"
+                android:text="Vé đã chọn"
                 android:textColor="@color/blue_text_dark"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -113,7 +113,7 @@
                             android:id="@+id/tv_voucher_code"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Chon voucher"
+                            android:text="Chọn voucher"
                             android:textColor="@color/blue_text_dark"
                             android:textSize="15sp"
                             android:textStyle="bold" />
@@ -123,7 +123,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="3dp"
-                            android:text="Chua ap dung ma giam gia"
+                            android:text="Chưa áp dụng mã giảm giá"
                             android:textColor="@color/blue_text_secondary"
                             android:textSize="13sp" />
                     </LinearLayout>
@@ -142,7 +142,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
                 android:layout_marginBottom="6dp"
-                android:text="Phuong thuc thanh toan"
+                android:text="Phương thức thanh toán"
                 android:textColor="@color/blue_text_primary"
                 android:textSize="14sp" />
 
@@ -190,7 +190,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="So ve"
+                            android:text="Số vé"
                             android:textColor="@color/blue_text_primary"
                             android:textSize="14sp" />
 
@@ -213,7 +213,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Tong tien ve"
+                            android:text="Tổng tiền vé"
                             android:textColor="@color/blue_text_primary"
                             android:textSize="14sp" />
 
@@ -236,7 +236,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Giam gia"
+                            android:text="Giảm giá"
                             android:textColor="@color/blue_text_primary"
                             android:textSize="14sp" />
 
@@ -270,7 +270,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Thanh toan"
+                android:text="Thanh toán"
                 android:textColor="@color/blue_text_secondary"
                 android:textSize="13sp" />
 

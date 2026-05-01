@@ -140,11 +140,11 @@ class CartFragment : Fragment() {
     private fun openCheckoutAll() {
         val state = viewModel.cartState.value
         if (state.items.isEmpty()) {
-            Toast.makeText(context, "Gio hang dang trong", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Giỏ hàng đang trống", Toast.LENGTH_SHORT).show()
             return
         }
         if (state.unavailableItemIds.isNotEmpty()) {
-            Toast.makeText(context, "Co ve khong con mo ban, vui long xoa khoi gio", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Có vé không còn mở bán, vui lòng xóa vé khỏi giỏ", Toast.LENGTH_SHORT).show()
             return
         }
         findNavController().navigate(R.id.checkoutFragment, bundleOf("itemIds" to longArrayOf()))
@@ -153,12 +153,12 @@ class CartFragment : Fragment() {
     private fun openCheckoutSelected() {
         val state = viewModel.cartState.value
         if (!state.hasSelection) {
-            Toast.makeText(context, "Chua chon muc nao", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Chưa chọn mục nào", Toast.LENGTH_SHORT).show()
             return
         }
         val selectedIds = state.selectedItemIds.toLongArray()
         if (selectedIds.any { it in state.unavailableItemIds }) {
-            Toast.makeText(context, "Muc da chon co ve khong con mo ban", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Mục đã chọn có vé không còn mở bán", Toast.LENGTH_SHORT).show()
             return
         }
         findNavController().navigate(R.id.checkoutFragment, bundleOf("itemIds" to selectedIds))

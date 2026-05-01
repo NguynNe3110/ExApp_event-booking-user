@@ -39,7 +39,7 @@ class CheckoutViewModel(
                     }
                     _state.update { it.copy(isLoading = false, items = items) }
                     if (items.isEmpty()) {
-                        _event.emit(CheckoutUiEvent.Toast("Khong co ve de thanh toan"))
+                        _event.emit(CheckoutUiEvent.Toast("Không có vé để thanh toán"))
                     }
                 }
                 is ApiResult.Error -> {
@@ -61,7 +61,7 @@ class CheckoutViewModel(
     fun checkout() {
         val current = _state.value
         if (current.items.isEmpty()) {
-            viewModelScope.launch { _event.emit(CheckoutUiEvent.Toast("Khong co ve de thanh toan")) }
+            viewModelScope.launch { _event.emit(CheckoutUiEvent.Toast("Không có vé để thanh toán")) }
             return
         }
 
@@ -76,7 +76,7 @@ class CheckoutViewModel(
             when (result) {
                 is ApiResult.Success -> {
                     _state.update { it.copy(isLoading = false) }
-                    _event.emit(CheckoutUiEvent.Toast("Dat hang thanh cong"))
+                    _event.emit(CheckoutUiEvent.Toast("Đặt hàng thành công"))
                     _event.emit(CheckoutUiEvent.CheckoutSuccess)
                 }
                 is ApiResult.Error -> {

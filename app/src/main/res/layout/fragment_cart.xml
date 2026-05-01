@@ -26,7 +26,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Gio hang"
+                android:text="Giỏ hàng"
                 android:textColor="@color/blue_text_dark"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -36,7 +36,7 @@
                 style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
-                android:text="Xoa tat ca"
+                android:text="Xóa tất cả"
                 android:textAllCaps="false"
                 android:textColor="@color/blue_primary_550"
                 android:textSize="13sp"
@@ -60,7 +60,7 @@
             android:id="@+id/checkbox_select_all"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Chon tat ca"
+            android:text="Chọn tất cả"
             android:textColor="@color/blue_text_dark"
             android:textSize="14sp" />
 
@@ -74,7 +74,7 @@
             style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="36dp"
-            android:text="Xoa da chon"
+            android:text="Xóa đã chọn"
             android:textAllCaps="false"
             android:textColor="@color/event_ongoing"
             android:textSize="13sp"
@@ -158,8 +158,8 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Voucher va phuong thuc thanh toan se chon o man hinh xac nhan."
-                android:textColor="@color/blue_text_secondary"
+                android:text="Vui lòng chuyển hướng để thanh toán"
+                android:textColor="#FF0000"
                 android:textSize="13sp" />
 
             <LinearLayout
@@ -176,7 +176,7 @@
                     android:layout_height="52dp"
                     android:layout_marginEnd="6dp"
                     android:layout_weight="1"
-                    android:text="Mua muc chon"
+                    android:text="Mua mục chọn"
                     android:textAllCaps="false"
                     android:textColor="@color/blue_primary_550"
                     android:textSize="14sp"
@@ -189,7 +189,7 @@
                     android:layout_height="52dp"
                     android:layout_marginStart="6dp"
                     android:layout_weight="1"
-                    android:text="Mua tat ca"
+                    android:text="Mua tất cả"
                     android:textAllCaps="false"
                     android:textColor="@android:color/white"
                     android:textSize="14sp"

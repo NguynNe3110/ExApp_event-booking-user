@@ -59,7 +59,7 @@ class BlogFragment : Fragment() {
                     blogAdapter.submitList(state.blogs)
 
                     val message = state.error ?: if (state.blogs.isEmpty() && !state.isLoading) {
-                        "Chua co bai viet"
+                        "Chưa có bài viết"
                     } else {
                         ""
                     }
