@@ -1,6 +1,7 @@
 package com.uzuu.customer.feature
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
@@ -40,6 +41,7 @@ class MainActivity : AppCompatActivity() {
             SessionManager.sessionEvents().collect { ev ->
                 when (ev) {
                     com.uzuu.customer.data.session.SessionManager.SessionEvent.LoggedOut -> {
+                        Toast.makeText(this@MainActivity, "Phiên đăng nhập hết hạn, vui lòng đăng nhập lại", Toast.LENGTH_SHORT).show()
                         val navHostFragment =
                             supportFragmentManager.findFragmentById(R.id.root_nav_host) as NavHostFragment
                         navHostFragment.navController.navigate(

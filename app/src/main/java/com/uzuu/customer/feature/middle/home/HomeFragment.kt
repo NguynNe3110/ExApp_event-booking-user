@@ -205,6 +205,12 @@ class HomeFragment : Fragment() {
 
         HomeBottomSheet(
             event = event,
+            onViewDetail = {
+                findNavController().navigate(
+                    R.id.action_homeFragment_to_eventDetail,
+                    androidx.core.os.bundleOf("event" to event)
+                )
+            },
             onAddToCart = { ticketTypeId, qty ->
                 val cartRepo = (requireActivity() as MainActivity).container.cartRepo
                 val result = cartRepo.addToCart(ticketTypeId, qty)

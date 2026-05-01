@@ -10,8 +10,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.uzuu.customer.R
+import com.uzuu.customer.core.result.ApiResult
 import com.uzuu.customer.databinding.FragmentCategoryEventsBinding
 import com.uzuu.customer.feature.MainActivity
+import com.uzuu.customer.feature.middle.home.HomeBottomSheet
 import com.uzuu.customer.ui.adapter.EventAdapter
 import kotlinx.coroutines.launch
 
@@ -40,9 +42,7 @@ class CategoryEventsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         adapter = EventAdapter { event ->
-            // navigate to detail
-            val bundle = bundleOf("event" to event)
-            findNavController().navigate(R.id.action_homeFragment_to_eventDetail, bundle)
+            showBottomSheet(event)
         }
         binding.recyclerCategoryEvents.apply {
             layoutManager = LinearLayoutManager(context)
@@ -67,6 +67,27 @@ class CategoryEventsFragment : Fragment() {
                 binding.tvEmpty.visibility = View.VISIBLE
             }
         }
+    }
+
+    private fun showBottomSheet(event: com.uzuu.customer.domain.model.Event) {
+        if (parentFragmentManager.findFragmentByTag("event_bottom_sheet") != null) return
+
+        HomeBottomSheet(
+            event = event,
+            onViewDetail = {
+                findNavController().navigate(
+                    R.id.eventDetailFragment,
+                    bundleOf("event" to event)
+                )
+            },
+            onAddToCart = { ticketTypeId, qty ->
+                val cartRepo = (requireActivity() as MainActivity).container.cartRepo
+                val result = cartRepo.addToCart(ticketTypeId, qty)
+                if (result is ApiResult.Error) {
+                    throw Exception(result.message)
+                }
+            }
+        ).show(parentFragmentManager, "event_bottom_sheet")
     }
 
     override fun onDestroyView() {

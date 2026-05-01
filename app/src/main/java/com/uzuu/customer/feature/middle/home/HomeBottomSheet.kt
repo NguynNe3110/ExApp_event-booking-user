@@ -19,6 +19,7 @@ import kotlinx.coroutines.launch
 
 class HomeBottomSheet(
     private val event: Event,
+    private val onViewDetail: () -> Unit,
     private val onAddToCart: suspend (ticketTypeId: Long, quantity: Int) -> Unit
 ) : BottomSheetDialogFragment() {
 
@@ -63,11 +64,7 @@ class HomeBottomSheet(
 
         binding.txtViewDetail.setOnClickListener {
             dismiss()
-            val parentFragment = parentFragmentManager.fragments
-                .filterIsInstance<HomeFragment>()
-                .firstOrNull()
-            parentFragment?.findNavController()
-                ?.navigate(HomeFragmentDirections.actionHomeFragmentToEventDetail(event))
+            onViewDetail()
         }
 
         binding.btnAddToCart.setOnClickListener {
