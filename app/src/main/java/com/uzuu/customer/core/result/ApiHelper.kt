@@ -1,6 +1,7 @@
 package com.uzuu.customer.core.result
 
 import retrofit2.HttpException
+import com.uzuu.customer.data.session.SessionManager
 import java.io.IOException
 import org.json.JSONObject
 
@@ -11,6 +12,17 @@ suspend fun <T> safeApiCall(block: suspend () -> T): ApiResult<T> {
         ApiResult.Error("Không có kết nối mạng hoặc timeout", e)
     } catch (e: HttpException) {
         val errorMessage = extractErrorMessage(e)
+        try {
+            if (e.code() == 401) {
+                // clear stored session and notify listeners
+                try {
+                    SessionManager.clear()
+                } catch (_: Exception) {}
+                try {
+                    SessionManager.notifyLoggedOut()
+                } catch (_: Exception) {}
+            }
+        } catch (_: Exception) {}
         ApiResult.Error(errorMessage, e)
     } catch (e: Exception) {
         ApiResult.Error("Lỗi không xác định: ${e.message}", e)

@@ -65,3 +65,50 @@
 - POST /blog/admin/tags
     - Request: BlogTagRequest
     - Response: ApiResponse<BlogTagResponse>
+
+Notes:
+
+- Path parameter types:
+    - `/events/{id}` — `id` is numeric (Long). Requests like `/events/blog-news` will be matched by other explicit mappings; if a non-numeric value reaches `{id}` binding, Spring will fail conversion.
+    - `/blog/posts/{slug}` — `slug` is a String (use for blog post lookup by slug).
+
+Example responses (abbreviated):
+
+`ApiResponse<BlogPostResponse>` (single post):
+
+```
+{
+    "code": 1000,
+    "message": "OK",
+    "result": {
+        "id": 12,
+        "title": "Event Announcement",
+        "slug": "event-announcement",
+        "summary": "Short summary...",
+        "content": "Full HTML or markdown content...",
+        "thumbnail": "https://.../thumb.jpg",
+        "authorName": "Organizer A",
+        "status": "PUBLISHED",
+        "publishedAt": "2026-05-01T10:00:00",
+        "createdAt": "2026-04-28T08:00:00",
+        "tags": [{ "id": 1, "name": "music", "slug": "music" }]
+    }
+}
+```
+
+`ApiResponse<Page<BlogPostResponse>>` (paged list):
+
+```
+{
+    "code": 1000,
+    "message": "OK",
+    "result": {
+        "content": [ { /* BlogPostResponse objects */ } ],
+        "pageable": { /* Spring Page metadata */ },
+        "totalPages": 5,
+        "totalElements": 50,
+        "number": 0,
+        "size": 10
+    }
+}
+```

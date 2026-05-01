@@ -40,6 +40,17 @@
     - Query params: `page` (default 0), `size` (default 10)
     - Response: ApiResponse<Page<BlogEventResponse>>
 
+Note:
+
+- `/events/{id}` expects a numeric `id` (Long). Do not pass a slug or string there (e.g. `blog-news` will fail conversion to Long).
+- Use `/events/blog-news` to get the blog/news list and `/blog/posts/{slug}` to retrieve blog post details by slug.
+
+Examples:
+
+- GET list (blog/news): `/events/blog-news?page=0&size=10`
+- GET event by id: `/events/123` (where `123` is numeric event id)
+- GET blog post by slug: `/blog/posts/my-event-announcement`
+
 ## CategoryController (base: /categories)
 
 - POST /categories

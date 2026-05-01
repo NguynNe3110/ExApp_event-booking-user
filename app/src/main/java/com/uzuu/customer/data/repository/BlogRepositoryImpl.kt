@@ -15,9 +15,9 @@ class BlogRepositoryImpl(
 
     override suspend fun getNews(): ApiResult<List<BlogEvent>> =
         safeApiCall {
-            val response = remote.getNews()
+            val response = remote.getNews(page = 0, size = 10)
             if (isOk(response.code)) {
-                response.result.map { it.toDomain() }
+                response.result.content.map { it.toDomain() }
             } else {
                 throw Exception(response.message.ifBlank { "Khong tai duoc blog" })
             }

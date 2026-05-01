@@ -212,3 +212,21 @@
 - `id`: Long
 - `name`: String
 - `slug`: String
+
+Example `BlogPostResponse` JSON (abbreviated):
+
+```
+{
+	"id": 12,
+	"title": "Event Announcement",
+	"slug": "event-announcement",
+	"summary": "Short summary...",
+	"content": "Full content...",
+	"thumbnail": "https://.../thumb.jpg",
+	"authorName": "Organizer A",
+	"status": "PUBLISHED",
+	"publishedAt": "2026-05-01T10:00:00",
+	"createdAt": "2026-04-28T08:00:00",
+	"tags": [{ "id": 1, "name": "music", "slug": "music" }]
+}
+```

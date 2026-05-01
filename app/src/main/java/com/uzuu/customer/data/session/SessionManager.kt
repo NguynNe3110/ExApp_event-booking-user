@@ -12,6 +12,10 @@ object SessionManager {
 
     private lateinit var prefs: SharedPreferences
 
+    // session events
+    enum class SessionEvent { LoggedOut }
+    private val _events = kotlinx.coroutines.flow.MutableSharedFlow<SessionEvent>(extraBufferCapacity = 1)
+
     fun init(context: Context) {
         prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
     }
@@ -30,5 +34,11 @@ object SessionManager {
             .remove(KEY_TOKEN)
             .remove(KEY_USERNAME)
             .apply()
+    }
+
+    fun sessionEvents(): kotlinx.coroutines.flow.SharedFlow<SessionEvent> = _events
+
+    suspend fun notifyLoggedOut() {
+        _events.emit(SessionEvent.LoggedOut)
     }
 }

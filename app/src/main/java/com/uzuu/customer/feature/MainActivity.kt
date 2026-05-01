@@ -2,6 +2,8 @@ package com.uzuu.customer.feature
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import com.uzuu.customer.R
@@ -31,6 +33,22 @@ class MainActivity : AppCompatActivity() {
                     .setPopUpTo(R.id.root_graph, true)
                     .build()
             )
+        }
+
+        // observe global session events (e.g., session expired)
+        lifecycleScope.launch {
+            SessionManager.sessionEvents().collect { ev ->
+                when (ev) {
+                    com.uzuu.customer.data.session.SessionManager.SessionEvent.LoggedOut -> {
+                        val navHostFragment =
+                            supportFragmentManager.findFragmentById(R.id.root_nav_host) as NavHostFragment
+                        navHostFragment.navController.navigate(
+                            R.id.auth_graph, null,
+                            NavOptions.Builder().setPopUpTo(R.id.root_graph, true).build()
+                        )
+                    }
+                }
+            }
         }
     }
 }
