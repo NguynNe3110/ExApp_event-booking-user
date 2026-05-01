@@ -4,9 +4,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.uzuu.customer.databinding.ItemCategorySectionBinding
 import com.uzuu.customer.feature.middle.home.CategoryWithEvents
 
@@ -34,16 +34,19 @@ class CategorySectionAdapter(
     inner class ViewHolder(private val binding: ItemCategorySectionBinding) : RecyclerView.ViewHolder(binding.root) {
         private val innerAdapter = EventSmallAdapter(onEventClick)
 
+        init {
+            binding.recyclerInnerEvents.apply {
+                layoutManager = GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false)
+                adapter = innerAdapter
+                itemAnimator = null
+                setHasFixedSize(true)
+            }
+        }
+
         fun bind(item: CategoryWithEvents) {
             binding.includeHeader.tvCategoryName.text = item.categoryName
             binding.includeHeader.btnViewMore.visibility = if (item.hasMoreEvents) View.VISIBLE else View.GONE
             binding.includeHeader.btnViewMore.setOnClickListener { onViewMoreClick(item.categoryName) }
-
-            binding.recyclerInnerEvents.apply {
-                layoutManager = androidx.recyclerview.widget.GridLayoutManager(context, 2, androidx.recyclerview.widget.GridLayoutManager.VERTICAL, false)
-                adapter = innerAdapter
-                setHasFixedSize(true)
-            }
 
             innerAdapter.submitList(item.displayedEvents)
         }

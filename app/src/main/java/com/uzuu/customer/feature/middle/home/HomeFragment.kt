@@ -97,6 +97,7 @@ class HomeFragment : Fragment() {
             layoutManager = LinearLayoutManager(context)
             adapter = categorySectionAdapter
             setHasFixedSize(false)
+            itemAnimator = null
         }
     }
 
