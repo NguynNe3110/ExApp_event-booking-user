@@ -9,7 +9,7 @@ class EventRemoteDataSource(
     private val eventApi: EventApi
 ) {
     suspend fun getEvent(page: Int):  BaseResponseDto<PageResponse<EventResponseDto>> {
-        return eventApi.getEvents(page, 10)
+        return eventApi.searchEvents(page = page, size = 10)
     }
 
     suspend fun searchEvents(

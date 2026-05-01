@@ -8,7 +8,7 @@ import kotlin.math.min
 data class CheckoutUiState(
     val isLoading: Boolean = false,
     val items: List<CartItem> = emptyList(),
-    val selectedPayment: String = "BANKING",
+    val selectedPayment: String = "MOMO",
     val selectedVoucher: Voucher? = null
 ) {
     val ticketCount: Int

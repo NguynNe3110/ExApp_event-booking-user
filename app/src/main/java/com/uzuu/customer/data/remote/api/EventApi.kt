@@ -7,12 +7,6 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface EventApi {
-    @GET("events")
-    suspend fun getEvents(
-        @Query("page") page: Int,
-        @Query("size") size: Int
-    ): BaseResponseDto<PageResponse<EventResponseDto>>
-
     @GET("events/search")
     suspend fun searchEvents(
         @Query("page") page: Int,
