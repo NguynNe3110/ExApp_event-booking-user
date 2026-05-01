@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.math.log
 
 class BlogViewModel(
     private val blogRepo: BlogRepository
@@ -22,6 +23,7 @@ class BlogViewModel(
             when (val result = blogRepo.getNews()) {
                 is ApiResult.Success -> {
                     _blogState.update {
+                        println("DEBUG [in blogviewmodel ] ${result.data}")
                         it.copy(isLoading = false, blogs = result.data, error = null)
                     }
                 }
