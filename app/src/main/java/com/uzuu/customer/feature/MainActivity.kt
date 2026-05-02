@@ -11,6 +11,9 @@ import com.uzuu.customer.R
 import com.uzuu.customer.core.di.AppContainer
 import com.uzuu.customer.data.session.SessionManager
 import com.uzuu.customer.databinding.ActivityMainBinding
+import android.net.Uri
+import android.content.Intent
+import com.uzuu.customer.core.constants.PaymentConstants
 
 class MainActivity : AppCompatActivity() {
 
@@ -36,6 +39,8 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
+        handleDeepLink(intent)
+
         // observe global session events (e.g., session expired)
         lifecycleScope.launch {
             SessionManager.sessionEvents().collect { ev ->
@@ -51,6 +56,43 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        if (intent != null) {
+            setIntent(intent)
+            handleDeepLink(intent)
+        }
+    }
+
+    private fun handleDeepLink(intent: Intent) {
+        val uri: Uri = intent.data ?: return
+
+        // Check if this is a payment status deep link
+        if (uri.scheme != PaymentConstants.PAYMENT_DEEP_LINK_SCHEME ||
+            uri.host != PaymentConstants.PAYMENT_DEEP_LINK_HOST) {
+            return
+        }
+
+        // Extract payment parameters from deep link
+        // Format: customer://payment-status?orderCode=<orderCode>&status=<status>
+        val orderCode = uri.getQueryParameter(PaymentConstants.PARAM_ORDER_CODE).orEmpty()
+        val status = uri.getQueryParameter(PaymentConstants.PARAM_STATUS).orEmpty()
+
+        val message = when (status.lowercase()) {
+            PaymentConstants.STATUS_SUCCESS,
+            PaymentConstants.STATUS_PAID -> "Thanh toán thành công"
+            PaymentConstants.STATUS_CANCEL,
+            PaymentConstants.STATUS_CANCELED -> "Đã hủy thanh toán"
+            else -> "Đã quay lại ứng dụng"
+        }
+
+        if (orderCode.isNotBlank()) {
+            Toast.makeText(this, "$message: #$orderCode", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
         }
     }
 }
