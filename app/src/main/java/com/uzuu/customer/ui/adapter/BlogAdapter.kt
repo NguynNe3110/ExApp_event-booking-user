@@ -11,6 +11,7 @@ import com.uzuu.customer.databinding.ItemBlogBinding
 import com.uzuu.customer.domain.model.BlogPost
 
 class BlogAdapter : ListAdapter<BlogPost, BlogAdapter.VH>(DIFF) {
+    var onItemClick: ((BlogPost) -> Unit)? = null
 
     companion object {
         private val DIFF = object : DiffUtil.ItemCallback<BlogPost>() {
@@ -59,6 +60,10 @@ class BlogAdapter : ListAdapter<BlogPost, BlogAdapter.VH>(DIFF) {
 
             btnShare.setOnClickListener {
                 android.widget.Toast.makeText(it.context, "Chia sẻ", android.widget.Toast.LENGTH_SHORT).show()
+            }
+
+            root.setOnClickListener {
+                onItemClick?.invoke(item)
             }
         }
     }

@@ -125,7 +125,7 @@ class LoginFragment: Fragment() {
     private fun setupEvent() {
         binding.txtForgetPassword.setOnClickListener {
             viewModel.onClickForgetPass(
-                binding.edtUsername.toString().trim()
+                binding.edtUsername.text.toString().trim()
             )
         }
 

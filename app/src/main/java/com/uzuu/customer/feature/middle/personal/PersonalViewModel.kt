@@ -71,7 +71,7 @@ class PersonalViewModel(
         }
     }
 
-    fun updateInfo(password: String, email: String, fullName: String, phone: String, address: String) {
+    fun updateInfo(email: String, fullName: String, phone: String, address: String) {
         val username = _state.value.username.ifBlank {
             SessionManager.getUsername() ?: run {
                 viewModelScope.launch { _event.emit(PersonalUiEvent.Toast("Không xác định được tài khoản")) }
@@ -82,7 +82,7 @@ class PersonalViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
             val request = UserRequestDto(
-                password = password,
+                password = null,
                 email    = email,
                 fullName = fullName,
                 phone    = phone,

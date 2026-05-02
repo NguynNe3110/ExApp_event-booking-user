@@ -47,7 +47,6 @@ class PersonalInfoFragment : Fragment() {
 
     private fun setupSaveButton() {
         binding.btnRegister.setOnClickListener {
-            val password = binding.edtPassword.text.toString().trim()
             val email    = binding.edtEmail.text.toString().trim()
             val fullName = binding.edtFullName.text.toString().trim()
             val phone    = binding.edtPhoneNumber.text.toString().trim()
@@ -58,7 +57,7 @@ class PersonalInfoFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            viewModel.updateInfo(password, email, fullName, phone, address)
+            viewModel.updateInfo(email, fullName, phone, address)
         }
     }
 
@@ -80,7 +79,6 @@ class PersonalInfoFragment : Fragment() {
                     binding.edtFullName.isEnabled    = editable
                     binding.edtPhoneNumber.isEnabled = editable
                     binding.edtAddress.isEnabled     = editable
-                    binding.edtPassword.isEnabled    = editable
                     binding.btnRegister.isEnabled    = editable
                     binding.progress.visibility = if (state.isLoading) View.VISIBLE else View.GONE
 

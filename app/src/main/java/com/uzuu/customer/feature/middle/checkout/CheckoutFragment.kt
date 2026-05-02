@@ -1,5 +1,7 @@
 package com.uzuu.customer.feature.middle.checkout
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -67,10 +69,10 @@ class CheckoutFragment : Fragment() {
     }
 
     private fun setupPayment() {
-        val methods = listOf("MOMO", "VNPAY")
+        val methods = listOf("MOMO", "VietQR")
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, methods)
         binding.dropdownPayment.setAdapter(adapter)
-        binding.dropdownPayment.setText(methods.first(), false)
+        binding.dropdownPayment.setText(viewModel.state.value.selectedPayment, false)
         binding.dropdownPayment.setOnItemClickListener { _, _, position, _ ->
             viewModel.selectPayment(methods[position])
         }
@@ -142,10 +144,41 @@ class CheckoutFragment : Fragment() {
                     when (event) {
                         is CheckoutUiEvent.Toast ->
                             Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
-                        is CheckoutUiEvent.CheckoutSuccess ->
-                            findNavController().popBackStack()
+                        is CheckoutUiEvent.CheckoutSuccess -> {
+                            handleCheckoutSuccess(event.order)
+                        }
                     }
                 }
+            }
+        }
+    }
+
+    private fun handleCheckoutSuccess(order: com.uzuu.customer.domain.model.Order) {
+        when (order.paymentMethod) {
+            "VIETQR" -> {
+                // Hiển thị bottom sheet với mã QR
+                PaymentResultBottomSheet.show(childFragmentManager, order) {
+                    findNavController().popBackStack()
+                }
+            }
+            "PAYOS" -> {
+                // Mở URL thanh toán PayOS
+                order.paymentUrl?.let { url ->
+                    if (url.isNotBlank()) {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                        try {
+                            startActivity(intent)
+                        } catch (e: Exception) {
+                            Toast.makeText(context, "Không thể mở link thanh toán", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+                findNavController().popBackStack()
+            }
+            else -> {
+                // Các phương thức khác (MOMO, VNPAY)
+                Toast.makeText(context, "Đơn hàng #${order.id} được tạo thành công", Toast.LENGTH_SHORT).show()
+                findNavController().popBackStack()
             }
         }
     }

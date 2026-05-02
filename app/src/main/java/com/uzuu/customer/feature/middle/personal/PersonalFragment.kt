@@ -70,6 +70,10 @@ class PersonalFragment : Fragment() {
             viewModel.onEditInfo()
         }
 
+        binding.rowChangePassword.setOnClickListener {
+            findNavController().navigate(R.id.action_personal_to_changePassword)
+        }
+
         binding.rowHistory.setOnClickListener {
             findNavController().navigate(R.id.action_personal_to_history)
         }

@@ -6,6 +6,7 @@ import com.uzuu.customer.core.result.ApiResult
 import com.uzuu.customer.domain.model.CartItem
 import com.uzuu.customer.domain.model.Event
 import com.uzuu.customer.domain.model.Voucher
+import com.uzuu.customer.feature.middle.checkout.ResolvedCheckoutItem
 import com.uzuu.customer.domain.repository.CartRepository
 import com.uzuu.customer.domain.repository.EventRepository
 import com.uzuu.customer.domain.repository.OrderRepository
@@ -41,14 +42,16 @@ class CheckoutViewModel(
                     } else {
                         r.data.items.filter { it.id in selectedIds }
                     }
-                    val voucherContext = resolveVoucherContext(items)
+                    val allocations = resolveAllocations(items)
+                    val voucherContext = allocations.firstOrNull { it.eventId != null }
                     _state.update {
                         it.copy(
                             isLoading = false,
                             items = items,
                             selectedEventId = voucherContext?.eventId,
                             selectedEventName = voucherContext?.eventName,
-                            selectedOrganizerName = voucherContext?.organizerName
+                            selectedOrganizerName = voucherContext?.organizerName,
+                            resolvedAllocations = allocations
                         )
                     }
                     if (items.isEmpty()) {
@@ -90,7 +93,7 @@ class CheckoutViewModel(
                 is ApiResult.Success -> {
                     _state.update { it.copy(isLoading = false) }
                     _event.emit(CheckoutUiEvent.Toast("Đặt hàng thành công"))
-                    _event.emit(CheckoutUiEvent.CheckoutSuccess)
+                    _event.emit(CheckoutUiEvent.CheckoutSuccess(result.data))
                 }
                 is ApiResult.Error -> {
                     _state.update { it.copy(isLoading = false) }
@@ -100,53 +103,43 @@ class CheckoutViewModel(
         }
     }
 
-    private suspend fun resolveVoucherContext(items: List<CartItem>): VoucherContext? {
-        if (items.isEmpty()) return null
+    private suspend fun resolveAllocations(items: List<CartItem>): List<ResolvedCheckoutItem> {
+        if (items.isEmpty()) return emptyList()
 
         val cachedEvents = runCatching { eventRepo.getCachedEvents() }.getOrDefault(emptyList())
-        val eventsByName = mutableMapOf<String, List<Event>>()
-
-        val resolvedEvent = items.firstNotNullOfOrNull { item ->
-            val events = eventsByName.getOrPut(item.eventName) {
-                runCatching {
-                    eventRepo.searchEvents(
-                        page = 1,
-                        search = item.eventName,
-                        province = null,
-                        minPrice = null,
-                        maxPrice = null
-                    ).data
-                }.getOrElse {
-                    cachedEvents.filter { event ->
-                        event.name.equals(item.eventName, ignoreCase = true) ||
-                            event.name.contains(item.eventName, ignoreCase = true)
-                    }
-                }
-            }
-
-            events.firstOrNull { event ->
-                event.ticketTypes.any { it.id == item.ticketTypeId }
-            }
-        }
-
-        return resolvedEvent?.let { event ->
-            VoucherContext(
-                eventId = event.id,
-                eventName = event.name,
-                organizerName = event.organizerName
-            )
-        } ?: items.firstOrNull()?.let { first ->
-            VoucherContext(
-                eventId = null,
-                eventName = first.eventName,
-                organizerName = null
+        return items.map { item ->
+            val event = findMatchingEvent(cachedEvents, item) ?: findMatchingEventByPaging(item)
+            ResolvedCheckoutItem(
+                itemId = item.id,
+                eventId = event?.id,
+                eventName = event?.name ?: item.eventName,
+                organizerName = event?.organizerName,
+                subtotal = item.subtotal
             )
         }
     }
 
-    private data class VoucherContext(
-        val eventId: Long?,
-        val eventName: String?,
-        val organizerName: String?
-    )
+    private fun findMatchingEvent(events: List<Event>, item: CartItem): Event? {
+        if (events.isEmpty()) return null
+
+        return events.firstOrNull { event ->
+            event.ticketTypes.any { ticket -> ticket.id == item.ticketTypeId }
+        }
+    }
+
+    private suspend fun findMatchingEventByPaging(item: CartItem): Event? {
+        var page = 1
+        var totalPages = 1
+
+        while (page <= totalPages) {
+            val result = runCatching { eventRepo.getEvent(page) }.getOrNull() ?: break
+            val match = findMatchingEvent(result.data, item)
+            if (match != null) return match
+            totalPages = result.totalPages.takeIf { it > 0 } ?: page
+            if (result.isLast) break
+            page++
+        }
+
+        return null
+    }
 }

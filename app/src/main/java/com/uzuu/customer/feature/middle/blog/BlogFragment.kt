@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import com.uzuu.customer.R
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -44,6 +46,17 @@ class BlogFragment : Fragment() {
 
     private fun setupRecycler() {
         blogAdapter = BlogAdapter()
+        blogAdapter.onItemClick = { post ->
+            val args = Bundle().apply {
+                putLong("blogId", post.id)
+                putString("title", post.title)
+                putString("content", post.content ?: "")
+                putString("thumbnail", post.thumbnail ?: "")
+                putString("authorName", post.authorName ?: "")
+                putString("publishedAt", post.publishedAt ?: post.createdAt ?: "")
+            }
+            findNavController().navigate(R.id.blogDetailFragment, args)
+        }
         binding.recyclerBlog.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = blogAdapter

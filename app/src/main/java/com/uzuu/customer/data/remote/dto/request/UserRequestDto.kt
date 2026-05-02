@@ -1,7 +1,7 @@
 package com.uzuu.customer.data.remote.dto.request
 
 data class UserRequestDto (
-    val password: String,
+    val password: String? = null,
     val email: String,
     val fullName: String,
     val phone: String,

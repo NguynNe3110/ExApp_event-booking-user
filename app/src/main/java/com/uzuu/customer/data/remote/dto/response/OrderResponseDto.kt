@@ -6,5 +6,6 @@ data class OrderResponseDto(
     val paymentMethod: String,
     val paymentStatus: String,   // PENDING | PAID | FAILED
     val orderStatus: String,     // PENDING | CONFIRMED | CANCELLED
-    val orderDate: String
+    val orderDate: String,
+    val paymentUrl: String? = null   // URL hoặc QR code string (PAYOS hoặc VietQR)
 )

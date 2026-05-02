@@ -95,4 +95,7 @@ dependencies {
 
     //glide
     implementation("com.github.bumptech.glide:glide:4.16.0")
+
+    // ZXing for QR code generation (VietQR)
+    implementation("com.google.zxing:core:3.5.3")
 }

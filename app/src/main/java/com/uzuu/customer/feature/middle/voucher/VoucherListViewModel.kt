@@ -28,9 +28,20 @@ class VoucherListViewModel(
     fun loadVouchers() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
-            when (val r = voucherRepo.getVouchers(page = 1)) {
+            val result = if (eventId != null) {
+                voucherRepo.getVouchersByEvent(eventId)
+            } else {
+                // fall back to paged list
+                when (val r = voucherRepo.getVouchers(page = 1)) {
+                    is ApiResult.Success -> ApiResult.Success(r.data.data)
+                    is ApiResult.Error -> ApiResult.Error(r.message, r.throwable)
+                }
+            }
+
+            when (result) {
                 is ApiResult.Success -> {
-                    val filtered = r.data.data
+                    val dataList = result.data
+                    val filtered = dataList
                         .filter { voucher -> voucher.quantity > 0 }
                         .filter { voucher -> matchesContext(voucher) }
                     _state.update {
@@ -42,16 +53,16 @@ class VoucherListViewModel(
                 }
                 is ApiResult.Error -> {
                     _state.update { it.copy(isLoading = false) }
-                    _event.emit(VoucherListUiEvent.Toast(r.message))
+                    _event.emit(VoucherListUiEvent.Toast(result.message))
                 }
             }
         }
     }
 
     private fun matchesContext(voucher: Voucher): Boolean {
-        val matchesEventId = eventId == null || voucher.eventId == eventId
-        val matchesEventName = eventName.isNullOrBlank() || matchesText(voucher.eventName, eventName)
-        val matchesOrganizer = organizerName.isNullOrBlank() || matchesText(voucher.creatorName, organizerName)
+        val matchesEventId = eventId == null || voucher.eventId == null || voucher.eventId == eventId
+        val matchesEventName = eventName.isNullOrBlank() || voucher.eventName.isNullOrBlank() || matchesText(voucher.eventName, eventName)
+        val matchesOrganizer = organizerName.isNullOrBlank() || voucher.creatorName.isNullOrBlank() || matchesText(voucher.creatorName, organizerName)
         return matchesEventId && matchesEventName && matchesOrganizer
     }
 

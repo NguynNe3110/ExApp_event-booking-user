@@ -54,14 +54,6 @@ class VoucherListFragment : Fragment() {
             findNavController().popBackStack()
         }
 
-        val eventName = arguments?.getString("eventName").orEmpty()
-        val organizerName = arguments?.getString("organizerName").orEmpty()
-        binding.tvContext.text = when {
-            eventName.isNotBlank() || organizerName.isNotBlank() ->
-                "Áp dụng cho: ${eventName.ifBlank { "Khong ro" }} | Tổ chức: ${organizerName.ifBlank { "Khong ro" }}"
-            else -> "Chọn mã giảm giá phù hợp"
-        }
-
         binding.btnBack.setOnClickListener { findNavController().popBackStack() }
         binding.recyclerVouchers.apply {
             layoutManager = LinearLayoutManager(context)

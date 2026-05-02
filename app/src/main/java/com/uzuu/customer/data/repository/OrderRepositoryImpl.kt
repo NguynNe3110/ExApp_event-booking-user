@@ -17,9 +17,21 @@ class OrderRepositoryImpl(
 
     private fun isOk(code: Int) = code == 200 || code == 0 || code == 1000
 
+    private fun normalizePaymentMethod(pm: String): String {
+        val s = pm.trim()
+        return when {
+            s.equals("vietqr", ignoreCase = true) -> "PAYOS"
+            s.equals("vnpay", ignoreCase = true) -> "VNPAY"
+            s.equals("momo", ignoreCase = true) -> "MOMO"
+            s.equals("payos", ignoreCase = true) -> "PAYOS"
+            else -> s.uppercase()
+        }
+    }
+
     override suspend fun checkout(paymentMethod: String, voucherCode: String?): ApiResult<Order> =
         safeApiCall {
-            val r = remote.checkout(paymentMethod, voucherCode?.takeIf { it.isNotBlank() })
+            val normalized = normalizePaymentMethod(paymentMethod)
+            val r = remote.checkout(normalized, voucherCode?.takeIf { it.isNotBlank() })
             if (isOk(r.code)) {
                 val order = r.result.toDomain()
                 local.cacheOrder(order.toEntity())
@@ -34,7 +46,7 @@ class OrderRepositoryImpl(
     ): ApiResult<Order> =
         safeApiCall {
             val r = remote.checkoutSelected(
-                paymentMethod = paymentMethod,
+                paymentMethod = normalizePaymentMethod(paymentMethod),
                 itemIds = itemIds,
                 voucherCode = voucherCode?.takeIf { it.isNotBlank() }
             )
@@ -87,7 +99,8 @@ private fun OrderResponseDto.toDomain() = Order(
     paymentMethod = paymentMethod,
     paymentStatus = paymentStatus,
     orderStatus   = orderStatus,
-    orderDate     = orderDate
+    orderDate     = orderDate,
+    paymentUrl    = paymentUrl
 )
 
 private fun Order.toEntity() = OrderEntity(

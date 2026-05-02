@@ -53,6 +53,18 @@
         android:label="Blog"/>
 
     <fragment
+        android:id="@+id/blogDetailFragment"
+        android:name="com.uzuu.customer.feature.middle.blog.BlogDetailFragment"
+        android:label="Chi tiết bài viết">
+        <argument android:name="blogId" app:argType="long" />
+        <argument android:name="title" app:argType="string" android:defaultValue="" />
+        <argument android:name="content" app:argType="string" android:defaultValue="" />
+        <argument android:name="thumbnail" app:argType="string" android:defaultValue="" />
+        <argument android:name="authorName" app:argType="string" android:defaultValue="" />
+        <argument android:name="publishedAt" app:argType="string" android:defaultValue="" />
+    </fragment>
+
+    <fragment
         android:id="@+id/ticketFragment"
         android:name="com.uzuu.customer.feature.middle.ticket.TicketFragment"
         android:label="Ticket"/>
@@ -67,12 +79,20 @@
         <action
             android:id="@+id/action_personal_to_history"
             app:destination="@id/historyFragment"/>
+        <action
+            android:id="@+id/action_personal_to_changePassword"
+            app:destination="@id/changePasswordFragment"/>
     </fragment>
 
     <fragment
         android:id="@+id/personalInfoFragment"
         android:name="com.uzuu.customer.feature.middle.personal.personalInfo.PersonalInfoFragment"
         android:label="Chỉnh sửa thông tin"/>
+
+    <fragment
+        android:id="@+id/changePasswordFragment"
+        android:name="com.uzuu.customer.feature.middle.personal.changePassword.ChangePasswordFragment"
+        android:label="Đổi mật khẩu" />
 
     <fragment
         android:id="@+id/eventDetailFragment"

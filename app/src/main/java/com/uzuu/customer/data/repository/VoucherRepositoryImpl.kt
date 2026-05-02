@@ -31,6 +31,18 @@ class VoucherRepositoryImpl(
                 throw Exception(r.message ?: "Khong lay duoc danh sach voucher")
             }
         }
+
+    override suspend fun getVouchersByEvent(eventId: Long): ApiResult<List<Voucher>> =
+        safeApiCall {
+            val r = remote.getVouchersByEvent(eventId)
+            if (isOk(r.code)) {
+                val list = r.result
+                println("DEBUG [IN VOUCHERrEPOSITORYIPLM] data : $list")
+                list.map { it.toDomain() }
+            } else {
+                throw Exception(r.message ?: "Khong lay duoc voucher cho event")
+            }
+        }
 }
 
 private fun VoucherResponseDto.toDomain() = Voucher(

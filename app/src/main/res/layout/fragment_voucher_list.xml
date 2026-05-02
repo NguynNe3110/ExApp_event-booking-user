@@ -44,14 +44,6 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tv_context"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textColor="@color/blue_text_secondary"
-            android:textSize="13sp"
-            tools:text="Áp dụng cho: Concert A | Tổ chức: ABC Event" />
     </com.google.android.material.card.MaterialCardView>
 
     <ProgressBar
@@ -68,7 +60,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:gravity="center"
-        android:text="Không có voucher phù hợp với sự kiện này"
+        android:text="Không có voucher phù hợp"
         android:textColor="@color/blue_text_secondary"
         android:textSize="16sp"
         android:visibility="gone" />

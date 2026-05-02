@@ -6,5 +6,6 @@ data class Order(
     val paymentMethod: String,
     val paymentStatus: String,
     val orderStatus: String,
-    val orderDate: String
+    val orderDate: String,
+    val paymentUrl: String? = null
 )
