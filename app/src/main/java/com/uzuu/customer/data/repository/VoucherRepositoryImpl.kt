@@ -19,6 +19,7 @@ class VoucherRepositoryImpl(
             val r = remote.getVouchers(page, size)
             if (isOk(r.code)) {
                 val p = r.result
+                println("DEBUG [IN VOUCHERrEPOSITORYIPLM] data : $p")
                 PagedResult(
                     data = p.content.map { it.toDomain() },
                     page = p.number,
