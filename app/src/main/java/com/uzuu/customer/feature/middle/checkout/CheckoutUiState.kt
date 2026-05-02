@@ -9,7 +9,10 @@ data class CheckoutUiState(
     val isLoading: Boolean = false,
     val items: List<CartItem> = emptyList(),
     val selectedPayment: String = "MOMO",
-    val selectedVoucher: Voucher? = null
+    val selectedVoucher: Voucher? = null,
+    val selectedEventId: Long? = null,
+    val selectedEventName: String? = null,
+    val selectedOrganizerName: String? = null
 ) {
     val ticketCount: Int
         get() = items.sumOf { it.quantity }

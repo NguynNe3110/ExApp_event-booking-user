@@ -3,8 +3,11 @@ package com.uzuu.customer.feature.middle.checkout
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.uzuu.customer.core.result.ApiResult
+import com.uzuu.customer.domain.model.CartItem
+import com.uzuu.customer.domain.model.Event
 import com.uzuu.customer.domain.model.Voucher
 import com.uzuu.customer.domain.repository.CartRepository
+import com.uzuu.customer.domain.repository.EventRepository
 import com.uzuu.customer.domain.repository.OrderRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +18,8 @@ import kotlinx.coroutines.launch
 
 class CheckoutViewModel(
     private val cartRepo: CartRepository,
-    private val orderRepo: OrderRepository
+    private val orderRepo: OrderRepository,
+    private val eventRepo: EventRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(CheckoutUiState())
@@ -37,7 +41,16 @@ class CheckoutViewModel(
                     } else {
                         r.data.items.filter { it.id in selectedIds }
                     }
-                    _state.update { it.copy(isLoading = false, items = items) }
+                    val voucherContext = resolveVoucherContext(items)
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            items = items,
+                            selectedEventId = voucherContext?.eventId,
+                            selectedEventName = voucherContext?.eventName,
+                            selectedOrganizerName = voucherContext?.organizerName
+                        )
+                    }
                     if (items.isEmpty()) {
                         _event.emit(CheckoutUiEvent.Toast("Không có vé để thanh toán"))
                     }
@@ -86,4 +99,54 @@ class CheckoutViewModel(
             }
         }
     }
+
+    private suspend fun resolveVoucherContext(items: List<CartItem>): VoucherContext? {
+        if (items.isEmpty()) return null
+
+        val cachedEvents = runCatching { eventRepo.getCachedEvents() }.getOrDefault(emptyList())
+        val eventsByName = mutableMapOf<String, List<Event>>()
+
+        val resolvedEvent = items.firstNotNullOfOrNull { item ->
+            val events = eventsByName.getOrPut(item.eventName) {
+                runCatching {
+                    eventRepo.searchEvents(
+                        page = 1,
+                        search = item.eventName,
+                        province = null,
+                        minPrice = null,
+                        maxPrice = null
+                    ).data
+                }.getOrElse {
+                    cachedEvents.filter { event ->
+                        event.name.equals(item.eventName, ignoreCase = true) ||
+                            event.name.contains(item.eventName, ignoreCase = true)
+                    }
+                }
+            }
+
+            events.firstOrNull { event ->
+                event.ticketTypes.any { it.id == item.ticketTypeId }
+            }
+        }
+
+        return resolvedEvent?.let { event ->
+            VoucherContext(
+                eventId = event.id,
+                eventName = event.name,
+                organizerName = event.organizerName
+            )
+        } ?: items.firstOrNull()?.let { first ->
+            VoucherContext(
+                eventId = null,
+                eventName = first.eventName,
+                organizerName = null
+            )
+        }
+    }
+
+    private data class VoucherContext(
+        val eventId: Long?,
+        val eventName: String?,
+        val organizerName: String?
+    )
 }

@@ -201,6 +201,7 @@
 - `summary`: String
 - `content`: String
 - `thumbnail`: String
+- `eventIds`: Set<Long>
 - `authorName`: String
 - `status`: String
 - `publishedAt`: LocalDateTime
@@ -223,6 +224,7 @@ Example `BlogPostResponse` JSON (abbreviated):
 	"summary": "Short summary...",
 	"content": "Full content...",
 	"thumbnail": "https://.../thumb.jpg",
+	"eventIds": [1, 2],
 	"authorName": "Organizer A",
 	"status": "PUBLISHED",
 	"publishedAt": "2026-05-01T10:00:00",

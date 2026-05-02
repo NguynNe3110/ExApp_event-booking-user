@@ -24,7 +24,14 @@ class VoucherListFragment : Fragment() {
 
     private val viewModel: VoucherListViewModel by viewModels {
         val container = (requireActivity() as MainActivity).container
-        VoucherListFactory(container.voucherRepo)
+        val args = arguments
+        val eventId = if (args?.containsKey("eventId") == true) args.getLong("eventId") else null
+        VoucherListFactory(
+            container.voucherRepo,
+            eventId,
+            args?.getString("eventName"),
+            args?.getString("organizerName")
+        )
     }
 
     private lateinit var voucherAdapter: VoucherAdapter
@@ -40,10 +47,19 @@ class VoucherListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         voucherAdapter = VoucherAdapter { voucher ->
+            voucherAdapter.selectedVoucherId = voucher.id
             findNavController().previousBackStackEntry
                 ?.savedStateHandle
                 ?.set("selectedVoucher", voucher)
             findNavController().popBackStack()
+        }
+
+        val eventName = arguments?.getString("eventName").orEmpty()
+        val organizerName = arguments?.getString("organizerName").orEmpty()
+        binding.tvContext.text = when {
+            eventName.isNotBlank() || organizerName.isNotBlank() ->
+                "Áp dụng cho: ${eventName.ifBlank { "Khong ro" }} | Tổ chức: ${organizerName.ifBlank { "Khong ro" }}"
+            else -> "Chọn mã giảm giá phù hợp"
         }
 
         binding.btnBack.setOnClickListener { findNavController().popBackStack() }

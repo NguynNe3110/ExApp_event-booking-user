@@ -3,6 +3,7 @@ package com.uzuu.customer.feature.middle.voucher
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.uzuu.customer.core.result.ApiResult
+import com.uzuu.customer.domain.model.Voucher
 import com.uzuu.customer.domain.repository.VoucherRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,7 +13,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class VoucherListViewModel(
-    private val voucherRepo: VoucherRepository
+    private val voucherRepo: VoucherRepository,
+    private val eventId: Long?,
+    private val eventName: String?,
+    private val organizerName: String?
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(VoucherListUiState())
@@ -24,12 +28,15 @@ class VoucherListViewModel(
     fun loadVouchers() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
-            when (val r = voucherRepo.getVouchers()) {
+            when (val r = voucherRepo.getVouchers(page = 1)) {
                 is ApiResult.Success -> {
+                    val filtered = r.data.data
+                        .filter { voucher -> voucher.quantity > 0 }
+                        .filter { voucher -> matchesContext(voucher) }
                     _state.update {
                         it.copy(
                             isLoading = false,
-                            vouchers = r.data.data.filter { voucher -> voucher.quantity > 0 }
+                            vouchers = filtered
                         )
                     }
                 }
@@ -39,5 +46,21 @@ class VoucherListViewModel(
                 }
             }
         }
+    }
+
+    private fun matchesContext(voucher: Voucher): Boolean {
+        val matchesEventId = eventId == null || voucher.eventId == eventId
+        val matchesEventName = eventName.isNullOrBlank() || matchesText(voucher.eventName, eventName)
+        val matchesOrganizer = organizerName.isNullOrBlank() || matchesText(voucher.creatorName, organizerName)
+        return matchesEventId && matchesEventName && matchesOrganizer
+    }
+
+    private fun matchesText(value: String?, expected: String?): Boolean {
+        val actual = value.orEmpty().trim()
+        val target = expected.orEmpty().trim()
+        if (actual.isEmpty() || target.isEmpty()) return false
+        return actual.equals(target, ignoreCase = true) ||
+            actual.contains(target, ignoreCase = true) ||
+            target.contains(actual, ignoreCase = true)
     }
 }

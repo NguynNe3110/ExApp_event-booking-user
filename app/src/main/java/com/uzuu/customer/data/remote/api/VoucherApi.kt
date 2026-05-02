@@ -9,7 +9,7 @@ import retrofit2.http.Query
 interface VoucherApi {
     @GET("vouchers")
     suspend fun getVouchers(
-        @Query("page") page: Int = 0,
+        @Query("page") page: Int = 1,
         @Query("size") size: Int = 50
     ): BaseResponseDto<PageResponse<VoucherResponseDto>>
 }

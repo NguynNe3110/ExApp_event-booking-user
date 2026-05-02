@@ -22,6 +22,12 @@ class VoucherAdapter(
         private val fmt = NumberFormat.getNumberInstance(Locale("vi", "VN"))
     }
 
+    var selectedVoucherId: Long? = null
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
+
     inner class VH(val binding: ItemVoucherBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
@@ -35,10 +41,22 @@ class VoucherAdapter(
         val voucher = getItem(position)
         with(holder.binding) {
             tvCode.text = voucher.code
-            tvOrganizer.text = "Organizer: ${voucher.creatorName.orEmpty().ifBlank { "Khong ro" }}"
-            tvEvent.text = voucher.eventName?.takeIf { it.isNotBlank() } ?: "Ap dung theo dieu kien voucher"
+            tvOrganizer.text = "Tổ chức: ${voucher.creatorName.orEmpty().ifBlank { "Khong ro" }}"
+            tvEvent.text = "Sự kiện: ${voucher.eventName?.takeIf { it.isNotBlank() } ?: "Khong ro"}"
             tvDiscount.text = discountText(voucher)
-            root.setOnClickListener { onClick(voucher) }
+
+            checkboxSelect.setOnCheckedChangeListener(null)
+            checkboxSelect.isChecked = voucher.id == selectedVoucherId
+            checkboxSelect.setOnCheckedChangeListener { _, checked ->
+                if (checked) {
+                    selectedVoucherId = voucher.id
+                    onClick(voucher)
+                } else if (selectedVoucherId == voucher.id) {
+                    selectedVoucherId = null
+                }
+            }
+
+            root.setOnClickListener { checkboxSelect.performClick() }
         }
     }
 

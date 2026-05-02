@@ -24,7 +24,8 @@ fun EventResponseDto.eventDtoToDomain(): Event {
         description   = description,
         status        = status.orEmpty(),
         imageUrls     = imageUrls.orEmpty(),
-        ticketTypes   = ticketTypes.orEmpty().map { it.ticketDtoToDomain() }
+        ticketTypes   = ticketTypes.orEmpty().map { it.ticketDtoToDomain() },
+        organizerName = organizerName ?: organizer?.fullName
     )
 }
 
@@ -54,7 +55,8 @@ fun EventEntity.toDomain(): Event {
         description   = description,
         status        = status,
         imageUrls     = imageList,
-        ticketTypes   = ticketList
+        ticketTypes   = ticketList,
+        organizerName = null
     )
 }
 

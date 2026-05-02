@@ -5,12 +5,15 @@ import androidx.lifecycle.ViewModelProvider
 import com.uzuu.customer.domain.repository.VoucherRepository
 
 class VoucherListFactory(
-    private val voucherRepo: VoucherRepository
+    private val voucherRepo: VoucherRepository,
+    private val eventId: Long?,
+    private val eventName: String?,
+    private val organizerName: String?
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(VoucherListViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return VoucherListViewModel(voucherRepo) as T
+            return VoucherListViewModel(voucherRepo, eventId, eventName, organizerName) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
