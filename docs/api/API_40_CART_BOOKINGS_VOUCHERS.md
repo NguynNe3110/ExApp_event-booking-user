@@ -44,9 +44,11 @@
 - GET /vouchers?page={page}&size={size}
     - Response: ApiResponse<Page<VoucherResponse>>
 
-- POST /vouchers/validate - Request: VoucherValidationRequest - Response: ApiResponse<Double>
+- POST /vouchers/validate
+    - Request: VoucherValidationRequest - Response: ApiResponse<Double>
 
-- GET /vouchers/event/{eventId} - Response: ApiResponse<List<VoucherResponse>>
+- GET /vouchers/event/{eventId}
+    - Response: ApiResponse<List<VoucherResponse>>
 
 - DELETE /vouchers/{id} - Response: ApiResponse<Void>
 
