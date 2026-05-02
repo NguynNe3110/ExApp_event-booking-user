@@ -14,6 +14,8 @@ class EventRepositoryImpl(
     private val eventLocal: EventLocalDataSource
 ) : EventRepository {
 
+    private val visibleEventStatuses = setOf("PENDING", "ON_SALE", "UPCOMING", "OPENING")
+
     override suspend fun getEvent(page: Int): PagedResult<Event> {
         println("DEBUG [EventRepositoryImpl] getEvent(page=$page) called")
 
@@ -26,7 +28,9 @@ class EventRepositoryImpl(
             println("DEBUG [EventRepositoryImpl] result — content=${pageData.content.size}, totalPages=${pageData.totalPages}, totalElements=${pageData.totalElements}, isLast=${pageData.last}, currentPage=${pageData.number}")
 
             if (pageData.content.isNotEmpty()) {
-                val events = pageData.content.map { it.eventDtoToDomain() }
+                val events = pageData.content
+                    .map { it.eventDtoToDomain() }
+                    .filter { it.isVisibleEvent() }
                 val entities = events.map { it.toEntity() }
                 eventLocal.cacheEvents(entities)
                 println("DEBUG [EventRepositoryImpl] Cached ${events.size} events")
@@ -96,7 +100,9 @@ class EventRepositoryImpl(
                 categoryId = categoryId
             )
             val pageData = response.result
-            val events = pageData.content.map { it.eventDtoToDomain() }
+            val events = pageData.content
+                .map { it.eventDtoToDomain() }
+                .filter { it.isVisibleEvent() }
             if (page == 1 && events.isNotEmpty()) {
                 eventLocal.cacheEvents(events.map { it.toEntity() })
             }
@@ -131,11 +137,15 @@ class EventRepositoryImpl(
 
     override suspend fun getCachedEvents(): List<Event> {
         return try {
-            eventLocal.getAllEvents().map {it.toDomain() }
+            eventLocal.getAllEvents().map { it.toDomain() }.filter { it.isVisibleEvent() }
         } catch (e: Exception) {
             println("DEBUG [EventRepositoryImpl] Error getting cached events: ${e.message}")
             emptyList()
         }
+    }
+
+    private fun Event.isVisibleEvent(): Boolean {
+        return status.uppercase() in visibleEventStatuses
     }
 
     private fun List<Event>.filterBySearchParams(

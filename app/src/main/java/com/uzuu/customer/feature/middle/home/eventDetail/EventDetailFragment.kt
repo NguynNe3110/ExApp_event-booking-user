@@ -46,6 +46,7 @@ class EventDetailFragment : Fragment() {
         binding.txtEventName.text       = event.name
         binding.txtCategory.text        = event.categoryName
         binding.txtLocation.text        = event.location
+        binding.txtOrganizer.text       = event.organizerName?.takeIf { it.isNotBlank() } ?: "Khong ro"
         binding.txtStartTime.text       = "Bắt đầu: ${event.startTime ?: "Chưa xác định"}"
         binding.txtEndTime.text         = "Kết thúc: ${event.endTime ?: "Chưa xác định"}"
         binding.txtSaleStart.text       = "Mở bán: ${event.saleStartDate ?: "Chưa xác định"}"

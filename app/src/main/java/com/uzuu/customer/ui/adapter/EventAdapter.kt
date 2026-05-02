@@ -17,6 +17,7 @@ class EventAdapter(
     companion object {
         private const val TYPE_START = 0
         private const val TYPE_END = 1
+        private const val API_ORIGIN = "https://be-event-mng-v3-production.up.railway.app"
 
         private val DIFF = object : DiffUtil.ItemCallback<Event>() {
             override fun areItemsTheSame(oldItem: Event, newItem: Event) = oldItem.id == newItem.id
@@ -25,8 +26,14 @@ class EventAdapter(
 
         fun fixImageUrl(url: String?): String? {
             if (url.isNullOrBlank()) return null
-            return url.replace("http://localhost", "http://192.168.222.194")
-                .replace("https://localhost", "http://192.168.222.194")
+            return when {
+                url.startsWith("http://localhost") || url.startsWith("https://localhost") -> {
+                    url.replace("http://localhost", API_ORIGIN)
+                        .replace("https://localhost", API_ORIGIN)
+                }
+                url.startsWith("http://") || url.startsWith("https://") -> url
+                else -> "$API_ORIGIN/${url.trimStart('/')}"
+            }
         }
     }
 
