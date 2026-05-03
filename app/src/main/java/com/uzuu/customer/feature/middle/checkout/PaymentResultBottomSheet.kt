@@ -43,13 +43,12 @@ class PaymentResultBottomSheet(
         binding.tvOrderId.text = "Đơn hàng: #${order.id}"
         binding.tvAmount.text = "${fmt.format(order.totalAmount.toLong())}đ"
         binding.tvPaymentMethod.text = when (order.paymentMethod) {
-            "VIETQR" -> "VietQR"
-            "PAYOS" -> "PayOS"
+            "PAYOS", "VIETQR" -> "VIETQR"
             else -> order.paymentMethod
         }
 
         when (order.paymentMethod) {
-            "VIETQR" -> displayVietQrCode()
+            "PAYOS", "VIETQR" -> displayVietQrCode()
             else -> {
                 binding.imgQrCode.visibility = View.GONE
                 binding.tvQrHint.visibility = View.GONE

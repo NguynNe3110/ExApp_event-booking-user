@@ -23,6 +23,12 @@ class HistoryViewModel(
 
     private var currentPage = 1
 
+    fun refreshOrders() {
+        currentPage = 1
+        _state.update { it.copy(isLoading = false, orders = emptyList(), isLastPage = false) }
+        loadOrders()
+    }
+
     fun loadOrders() {
         if (_state.value.isLoading) return
         viewModelScope.launch {

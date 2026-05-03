@@ -33,7 +33,7 @@ class CheckoutFragment : Fragment() {
 
     private val viewModel: CheckoutViewModel by viewModels {
         val container = (requireActivity() as MainActivity).container
-        CheckoutFactory(container.cartRepo, container.orderRepo, container.eventRepo)
+        CheckoutFactory(container.cartRepo, container.orderRepo, container.eventRepo, container.voucherRepo)
     }
 
     private val ticketAdapter = CheckoutTicketAdapter()
@@ -69,12 +69,20 @@ class CheckoutFragment : Fragment() {
     }
 
     private fun setupPayment() {
-        val methods = listOf("MOMO", "VietQR")
+        val methods = listOf("MOMO", "VIETQR")
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, methods)
         binding.dropdownPayment.setAdapter(adapter)
-        binding.dropdownPayment.setText(viewModel.state.value.selectedPayment, false)
+        binding.dropdownPayment.setText(displayPaymentMethod(viewModel.state.value.selectedPayment), false)
         binding.dropdownPayment.setOnItemClickListener { _, _, position, _ ->
-            viewModel.selectPayment(methods[position])
+            viewModel.selectPayment(mapDisplayedPaymentToRequest(methods[position]))
+        }
+        // Ensure dropdown shows all items even if current text matches one item
+        binding.dropdownPayment.setOnTouchListener { _, _ ->
+            try {
+                adapter.filter.filter("")
+            } catch (e: Exception) { }
+            binding.dropdownPayment.showDropDown()
+            false
         }
     }
 
@@ -98,6 +106,7 @@ class CheckoutFragment : Fragment() {
         val handle = findNavController().currentBackStackEntry?.savedStateHandle ?: return
         handle.getLiveData<Voucher>("selectedVoucher").observe(viewLifecycleOwner) { voucher ->
             viewModel.selectVoucher(voucher)
+            setupPayment()
             handle.remove<Voucher>("selectedVoucher")
         }
     }
@@ -130,7 +139,6 @@ class CheckoutFragment : Fragment() {
                         }
                         else -> "Chưa áp dụng mã giảm giá"
                     }
-                    binding.dropdownPayment.setText(state.selectedPayment, false)
                     binding.btnCheckout.isEnabled = !state.isLoading && state.items.isNotEmpty()
                 }
             }
@@ -155,12 +163,6 @@ class CheckoutFragment : Fragment() {
 
     private fun handleCheckoutSuccess(order: com.uzuu.customer.domain.model.Order) {
         when (order.paymentMethod) {
-            "VIETQR" -> {
-                // Hiển thị bottom sheet với mã QR
-                PaymentResultBottomSheet.show(childFragmentManager, order) {
-                    findNavController().popBackStack()
-                }
-            }
             "PAYOS" -> {
                 // Mở URL thanh toán PayOS
                 order.paymentUrl?.let { url ->
@@ -181,6 +183,16 @@ class CheckoutFragment : Fragment() {
                 findNavController().popBackStack()
             }
         }
+    }
+
+    private fun mapDisplayedPaymentToRequest(displayed: String): String = when (displayed) {
+        "VIETQR" -> "PAYOS"
+        else -> displayed
+    }
+
+    private fun displayPaymentMethod(paymentMethod: String): String = when (paymentMethod) {
+        "PAYOS" -> "VIETQR"
+        else -> paymentMethod
     }
 
     private fun money(value: Double): String = "${fmt.format(value.toLong())}d"

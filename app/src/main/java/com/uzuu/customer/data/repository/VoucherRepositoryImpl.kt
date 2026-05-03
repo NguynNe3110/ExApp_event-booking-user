@@ -43,6 +43,16 @@ class VoucherRepositoryImpl(
                 throw Exception(r.message ?: "Khong lay duoc voucher cho event")
             }
         }
+
+    override suspend fun validateVoucher(code: String, eventAmounts: Map<String, Double>): ApiResult<Double> =
+        safeApiCall {
+            val r = remote.validateVoucher(code, eventAmounts)
+            if (isOk(r.code)) {
+                r.result
+            } else {
+                throw Exception(r.message ?: "Khong tinh duoc gia tri giam gia")
+            }
+        }
 }
 
 private fun VoucherResponseDto.toDomain() = Voucher(

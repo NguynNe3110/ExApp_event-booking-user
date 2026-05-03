@@ -63,7 +63,20 @@ class OrderRepositoryImpl(
                 val r = remote.getMyOrders(page)
                 if (isOk(r.code)) {
                     val p = r.result
-                    val orders = p.content.map { it.toDomain() }
+                    val cachedById = if (page <= 1) {
+                        local.getAllOrders().associateBy { it.id }
+                    } else {
+                        emptyMap()
+                    }
+                    val orders = p.content.map { dto ->
+                        val domain = dto.toDomain()
+                        val cachedUrl = cachedById[domain.id]?.paymentUrl
+                        if (domain.paymentUrl.isNullOrBlank() && !cachedUrl.isNullOrBlank()) {
+                            domain.copy(paymentUrl = cachedUrl)
+                        } else {
+                            domain
+                        }
+                    }
                     if (page <= 1) local.clearAllOrders()
                     local.cacheOrders(orders.map { it.toEntity() })
                     PagedResult(
@@ -109,7 +122,8 @@ private fun Order.toEntity() = OrderEntity(
     paymentMethod = paymentMethod,
     paymentStatus = paymentStatus,
     orderStatus   = orderStatus,
-    orderDate     = orderDate
+    orderDate     = orderDate,
+    paymentUrl    = paymentUrl
 )
 
 private fun OrderEntity.toDomain() = Order(
@@ -118,5 +132,6 @@ private fun OrderEntity.toDomain() = Order(
     paymentMethod = paymentMethod,
     paymentStatus = paymentStatus,
     orderStatus   = orderStatus,
-    orderDate     = orderDate
+    orderDate     = orderDate,
+    paymentUrl    = paymentUrl
 )

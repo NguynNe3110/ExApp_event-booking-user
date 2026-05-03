@@ -56,6 +56,14 @@
                 android:layout_marginTop="3dp"
                 android:textColor="@color/blue_text_secondary"
                 android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/tv_min_order"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:textColor="@color/blue_text_secondary"
+                android:textSize="12sp" />
         </LinearLayout>
 
         <com.google.android.material.checkbox.MaterialCheckBox

@@ -12,5 +12,6 @@ data class OrderEntity(
     val paymentStatus: String,
     val orderStatus: String,
     val orderDate: String,
+    val paymentUrl: String? = null,
     val cachedAt: Long = System.currentTimeMillis()
 )

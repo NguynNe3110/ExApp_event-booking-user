@@ -10,6 +10,7 @@ import com.uzuu.customer.feature.middle.checkout.ResolvedCheckoutItem
 import com.uzuu.customer.domain.repository.CartRepository
 import com.uzuu.customer.domain.repository.EventRepository
 import com.uzuu.customer.domain.repository.OrderRepository
+import com.uzuu.customer.domain.repository.VoucherRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -20,7 +21,8 @@ import kotlinx.coroutines.launch
 class CheckoutViewModel(
     private val cartRepo: CartRepository,
     private val orderRepo: OrderRepository,
-    private val eventRepo: EventRepository
+    private val eventRepo: EventRepository,
+    private val voucherRepo: VoucherRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(CheckoutUiState())
@@ -54,6 +56,7 @@ class CheckoutViewModel(
                             resolvedAllocations = allocations
                         )
                     }
+                    validateSelectedVoucher()
                     if (items.isEmpty()) {
                         _event.emit(CheckoutUiEvent.Toast("Không có vé để thanh toán"))
                     }
@@ -71,7 +74,8 @@ class CheckoutViewModel(
     }
 
     fun selectVoucher(voucher: Voucher?) {
-        _state.update { it.copy(selectedVoucher = voucher) }
+        _state.update { it.copy(selectedVoucher = voucher, validatedDiscountAmount = null) }
+        validateSelectedVoucher()
     }
 
     fun checkout() {
@@ -141,5 +145,30 @@ class CheckoutViewModel(
         }
 
         return null
+    }
+
+    private fun validateSelectedVoucher() {
+        val current = _state.value
+        val voucher = current.selectedVoucher ?: return
+        val eventAmounts = current.resolvedAllocations
+            .groupBy { it.eventId ?: -1L }
+            .mapNotNull { (eventId, allocations) ->
+                if (eventId < 0) null else eventId.toString() to allocations.sumOf { it.subtotal }
+            }
+            .toMap()
+
+        if (eventAmounts.isEmpty()) return
+
+        viewModelScope.launch {
+            when (val result = voucherRepo.validateVoucher(voucher.code, eventAmounts)) {
+                is ApiResult.Success -> {
+                    _state.update { it.copy(validatedDiscountAmount = result.data) }
+                }
+                is ApiResult.Error -> {
+                    _state.update { it.copy(validatedDiscountAmount = null) }
+                    _event.emit(CheckoutUiEvent.Toast(result.message ?: "Voucher không hợp lệ"))
+                }
+            }
+        }
     }
 }

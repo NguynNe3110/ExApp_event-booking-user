@@ -10,6 +10,7 @@ data class CheckoutUiState(
     val items: List<CartItem> = emptyList(),
     val selectedPayment: String = "MOMO",
     val selectedVoucher: Voucher? = null,
+    val validatedDiscountAmount: Double? = null,
     val selectedEventId: Long? = null,
     val selectedEventName: String? = null,
     val selectedOrganizerName: String? = null,
@@ -23,6 +24,7 @@ data class CheckoutUiState(
 
     val discountAmount: Double
         get() {
+            validatedDiscountAmount?.let { return it.coerceIn(0.0, subtotal) }
             val voucher = selectedVoucher ?: return 0.0
             val targetSubtotal = voucherTargetSubtotal(voucher)
             val minOrder = voucher.minOrderAmount ?: 0.0

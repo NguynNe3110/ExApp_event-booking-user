@@ -10,7 +10,9 @@ import com.uzuu.customer.domain.model.Order
 import java.text.NumberFormat
 import java.util.Locale
 
-class OrderAdapter : ListAdapter<Order, OrderAdapter.VH>(DIFF) {
+class OrderAdapter(
+    private val onClick: (Order) -> Unit
+) : ListAdapter<Order, OrderAdapter.VH>(DIFF) {
 
     companion object {
         private val DIFF = object : DiffUtil.ItemCallback<Order>() {
@@ -33,7 +35,10 @@ class OrderAdapter : ListAdapter<Order, OrderAdapter.VH>(DIFF) {
             tvOrderId.text        = "Đơn #${order.id}"
             tvOrderDate.text      = order.orderDate.take(10)
             tvTotalAmount.text    = "${fmt.format(order.totalAmount.toLong())}đ"
-            tvPaymentMethod.text  = order.paymentMethod
+            tvPaymentMethod.text  = when (order.paymentMethod) {
+                "PAYOS" -> "VIETQR"
+                else -> order.paymentMethod
+            }
 
             val (payLabel, payColor) = when (order.paymentStatus) {
                 "PAID"    -> "● Đã thanh toán" to root.context.getColor(com.uzuu.customer.R.color.event_completed)
@@ -48,6 +53,7 @@ class OrderAdapter : ListAdapter<Order, OrderAdapter.VH>(DIFF) {
                 "CANCELLED"  -> "Đã huỷ"
                 else         -> "Đang xử lý"
             }
+            root.setOnClickListener { onClick(order) }
         }
     }
 }

@@ -44,6 +44,14 @@ class VoucherAdapter(
             tvOrganizer.text = "Tổ chức: ${voucher.creatorName.orEmpty().ifBlank { "Khong ro" }}"
             tvEvent.text = "Sự kiện: ${voucher.eventName?.takeIf { it.isNotBlank() } ?: "Khong ro"}"
             tvDiscount.text = discountText(voucher)
+            
+            // Show minimum order amount if present
+            if (voucher.minOrderAmount != null && voucher.minOrderAmount > 0.0) {
+                tvMinOrder.visibility = android.view.View.VISIBLE
+                tvMinOrder.text = "Đơn hàng tối thiểu: ${fmt.format(voucher.minOrderAmount.toLong())}d"
+            } else {
+                tvMinOrder.visibility = android.view.View.GONE
+            }
 
             checkboxSelect.setOnCheckedChangeListener(null)
             checkboxSelect.isChecked = voucher.id == selectedVoucherId

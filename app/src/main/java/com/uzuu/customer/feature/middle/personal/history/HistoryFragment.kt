@@ -1,5 +1,7 @@
 package com.uzuu.customer.feature.middle.personal.history
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +16,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.uzuu.customer.databinding.FragmentHistoryBinding
+import com.uzuu.customer.domain.model.Order
 import com.uzuu.customer.feature.MainActivity
 import com.uzuu.customer.ui.adapter.OrderAdapter
 import kotlinx.coroutines.launch
@@ -51,11 +54,30 @@ class HistoryFragment : Fragment() {
     }
 
     private fun setupRecycler() {
-        orderAdapter = OrderAdapter()
+        orderAdapter = OrderAdapter { order ->
+            if (order.paymentStatus == "PENDING") {
+                openPaymentWeb(order)
+            }
+        }
         binding.recyclerOrders.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = orderAdapter
             setHasFixedSize(false)
+        }
+    }
+
+    private fun openPaymentWeb(order: Order) {
+        val url = order.paymentUrl
+        if (url.isNullOrBlank()) {
+            Toast.makeText(context, "Đơn này chưa có liên kết thanh toán", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        try {
+            startActivity(intent)
+        } catch (_: Exception) {
+            Toast.makeText(context, "Không thể mở trang thanh toán", Toast.LENGTH_SHORT).show()
         }
     }
 
