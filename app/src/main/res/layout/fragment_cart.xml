@@ -97,7 +97,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:gravity="center"
-        android:text="Gio hang trong"
+        android:text="Giỏ hàng trống"
         android:textColor="@color/blue_text_secondary"
         android:textSize="18sp"
         android:visibility="gone" />
@@ -141,7 +141,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Tong cong:"
+                    android:text="Tổng cộng:"
                     android:textSize="15sp"
                     android:textStyle="bold" />
 

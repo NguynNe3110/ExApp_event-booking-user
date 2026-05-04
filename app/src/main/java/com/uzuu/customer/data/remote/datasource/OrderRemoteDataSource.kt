@@ -9,16 +9,23 @@ class OrderRemoteDataSource(private val orderApi: OrderApi) {
 
     suspend fun checkout(
         paymentMethod: String,
-        voucherCode: String?
+        voucherCode: String?,
+        platform: String = "mobile"
     ): BaseResponseDto<OrderResponseDto> =
-        orderApi.checkout(paymentMethod, voucherCode)
+        orderApi.checkout(paymentMethod, voucherCode, platform)
 
     suspend fun checkoutSelected(
         paymentMethod: String,
         itemIds: List<Long>,
-        voucherCode: String?
+        voucherCode: String?,
+        platform: String = "mobile"
     ): BaseResponseDto<OrderResponseDto> =
-        orderApi.checkoutSelected(paymentMethod = paymentMethod, voucherCode = voucherCode, itemIds = itemIds)
+        orderApi.checkoutSelected(
+            paymentMethod = paymentMethod,
+            voucherCode = voucherCode,
+            platform = platform,
+            itemIds = itemIds
+        )
 
     suspend fun getMyOrders(page: Int): BaseResponseDto<PageResponse<OrderResponseDto>> =
         orderApi.getMyOrders(page, 20)

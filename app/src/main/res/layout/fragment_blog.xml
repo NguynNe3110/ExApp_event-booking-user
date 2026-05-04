@@ -18,7 +18,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Blog"
+            android:text="Trang tin tức"
             android:textColor="@color/blue_text_dark"
             android:textSize="20sp"
             android:textStyle="bold" />

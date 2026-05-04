@@ -13,6 +13,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.uzuu.customer.databinding.FragmentChangePasswordBinding
 import com.uzuu.customer.feature.MainActivity
+import com.uzuu.customer.ui.dialog.showConfirmDialog
 import kotlinx.coroutines.launch
 
 class ChangePasswordFragment : Fragment() {
@@ -44,7 +45,16 @@ class ChangePasswordFragment : Fragment() {
             val old = binding.edtOldPassword.text.toString().trim()
             val nw = binding.edtNewPassword.text.toString().trim()
             val conf = binding.edtConfirmPassword.text.toString().trim()
-            viewModel.changePassword(old, nw, conf)
+
+            showConfirmDialog(
+                title = "Xác nhận đổi mật khẩu",
+                message = "Bạn có chắc chắn muốn đổi mật khẩu?",
+                positiveText = "Đổi",
+                negativeText = "Hủy",
+                onPositive = {
+                    viewModel.changePassword(old, nw, conf)
+                }
+            )
         }
     }
 

@@ -27,18 +27,6 @@ class MainActivity : AppCompatActivity() {
 
         container = AppContainer(applicationContext)
 
-        if (SessionManager.getToken() != null) {
-            val navHostFragment =
-                supportFragmentManager.findFragmentById(R.id.root_nav_host) as NavHostFragment
-            navHostFragment.navController.navigate(
-                R.id.mainFragment,
-                null,
-                NavOptions.Builder()
-                    .setPopUpTo(R.id.root_graph, true)
-                    .build()
-            )
-        }
-
         handleDeepLink(intent)
 
         // observe global session events (e.g., session expired)

@@ -7,7 +7,7 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.uzuu.customer.feature.middle.home.HomeFragment"
-        android:label="Home">
+        android:label="Event">
         <argument
             android:name="usernameStr"
             app:argType="string"
@@ -32,7 +32,7 @@
     <fragment
         android:id="@+id/checkoutFragment"
         android:name="com.uzuu.customer.feature.middle.checkout.CheckoutFragment"
-        android:label="Xac nhan thanh toan">
+        android:label="Xác nhận thanh toán">
         <argument
             android:name="itemIds"
             app:argType="long[]"

@@ -21,6 +21,7 @@ import com.uzuu.customer.R
 import com.uzuu.customer.data.session.SessionManager
 import com.uzuu.customer.databinding.FragmentPersonalBinding
 import com.uzuu.customer.feature.MainActivity
+import com.uzuu.customer.ui.dialog.showConfirmDialog
 import kotlinx.coroutines.launch
 
 class PersonalFragment : Fragment() {
@@ -79,15 +80,23 @@ class PersonalFragment : Fragment() {
         }
 
         binding.btnLogout.setOnClickListener {
-            SessionManager.clear()
-            val rootNavController = (requireActivity() as MainActivity)
-                .supportFragmentManager
-                .findFragmentById(R.id.root_nav_host)
-                .let { it as NavHostFragment }
-                .navController
-            rootNavController.navigate(
-                R.id.auth_graph, null,
-                NavOptions.Builder().setPopUpTo(R.id.root_graph, true).build()
+            showConfirmDialog(
+                title = "Đăng xuất",
+                message = "Bạn có chắc chắn muốn đăng xuất khỏi ứng dụng?",
+                positiveText = "Đăng xuất",
+                negativeText = "Hủy",
+                onPositive = {
+                    SessionManager.clear()
+                    val rootNavController = (requireActivity() as MainActivity)
+                        .supportFragmentManager
+                        .findFragmentById(R.id.root_nav_host)
+                        .let { it as NavHostFragment }
+                        .navController
+                    rootNavController.navigate(
+                        R.id.auth_graph, null,
+                        NavOptions.Builder().setPopUpTo(R.id.root_graph, true).build()
+                    )
+                }
             )
         }
         binding.rowTheme.setOnClickListener {

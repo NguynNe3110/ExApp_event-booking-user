@@ -21,18 +21,22 @@
 
 ## OrderController (base: /bookings)
 
-- POST /bookings/checkout?paymentMethod={paymentMethod}&voucherCode={voucherCode}
+- POST /bookings/checkout?paymentMethod={paymentMethod}&voucherCode={voucherCode}&platform={platform}
     - Query `paymentMethod`: MOMO | VNPAY | PAYOS
     - Query `voucherCode`: optional
+    - Query `platform`: optional, mac dinh la `web`, co the la `web` hoac `mobile` de backend biet request tu dau
     - Response: ApiResponse<OrderResponse>
     - Note: neu `paymentMethod = PAYOS` thi `result.paymentUrl` se co gia tri de frontend redirect nguoi dung sang trang thanh toan
+    - Mobile app example: `https://be-event-mng-v3-production.up.railway.app/bookings/checkout?paymentMethod=PAYOS&platform=mobile`
 
-- POST /bookings/checkout-selected?paymentMethod={paymentMethod}&voucherCode={voucherCode}
+- POST /bookings/checkout-selected?paymentMethod={paymentMethod}&voucherCode={voucherCode}&platform={platform}
     - Body: List<Long> itemIds
     - Query `paymentMethod`: MOMO | VNPAY | PAYOS
     - Query `voucherCode`: optional
+    - Query `platform`: optional, mac dinh la `web`, co the la `web` hoac `mobile` de backend biet request tu dau
     - Response: ApiResponse<OrderResponse>
     - Note: neu `paymentMethod = PAYOS` thi `result.paymentUrl` se co gia tri de frontend redirect nguoi dung sang trang thanh toan
+    - Mobile app example: `https://be-event-mng-v3-production.up.railway.app/bookings/checkout-selected?paymentMethod=PAYOS&platform=mobile`
 
 - GET /bookings?page={page}&size={size}
     - Response: ApiResponse<Page<OrderResponse>>

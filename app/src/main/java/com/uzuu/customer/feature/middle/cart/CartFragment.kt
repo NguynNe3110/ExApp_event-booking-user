@@ -17,6 +17,7 @@ import com.uzuu.customer.R
 import com.uzuu.customer.databinding.FragmentCartBinding
 import com.uzuu.customer.feature.MainActivity
 import com.uzuu.customer.ui.adapter.CartItemAdapter
+import com.uzuu.customer.ui.dialog.showConfirmDialog
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
@@ -70,10 +71,30 @@ class CartFragment : Fragment() {
     }
 
     private fun setupButtons() {
-        binding.btnClearCart.setOnClickListener { viewModel.onClearCart() }
+        binding.btnClearCart.setOnClickListener {
+            showConfirmDialog(
+                title = "Xóa giỏ hàng",
+                message = "Bạn có chắc chắn muốn xóa tất cả vé khỏi giỏ hàng?",
+                positiveText = "Xóa",
+                negativeText = "Hủy",
+                onPositive = {
+                    viewModel.onClearCart()
+                }
+            )
+        }
         binding.btnCheckout.setOnClickListener { openCheckoutAll() }
         binding.btnCheckoutSelected.setOnClickListener { openCheckoutSelected() }
-        binding.btnDeleteSelected.setOnClickListener { viewModel.deleteSelectedItems() }
+        binding.btnDeleteSelected.setOnClickListener {
+            showConfirmDialog(
+                title = "Xóa vé đã chọn",
+                message = "Bạn có chắc chắn muốn xóa các vé đã chọn?",
+                positiveText = "Xóa",
+                negativeText = "Hủy",
+                onPositive = {
+                    viewModel.deleteSelectedItems()
+                }
+            )
+        }
 
         binding.checkboxSelectAll.setOnCheckedChangeListener { _, _ ->
             viewModel.toggleSelectAll()

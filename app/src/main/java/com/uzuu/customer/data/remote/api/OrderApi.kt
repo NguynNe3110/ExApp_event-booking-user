@@ -13,7 +13,8 @@ interface OrderApi {
     @POST("bookings/checkout")
     suspend fun checkout(
         @Query("paymentMethod") paymentMethod: String,
-        @Query("voucherCode") voucherCode: String? = null
+        @Query("voucherCode") voucherCode: String? = null,
+        @Query("platform") platform: String = "mobile"
     ): BaseResponseDto<OrderResponseDto>
 
     @GET("bookings")
@@ -26,6 +27,7 @@ interface OrderApi {
     suspend fun checkoutSelected(
         @Query("paymentMethod") paymentMethod: String,
         @Query("voucherCode") voucherCode: String? = null,
+        @Query("platform") platform: String = "mobile",
         @Body itemIds: List<Long>
     ): BaseResponseDto<OrderResponseDto>
 }

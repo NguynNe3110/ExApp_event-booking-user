@@ -28,10 +28,18 @@ class OrderRepositoryImpl(
         }
     }
 
-    override suspend fun checkout(paymentMethod: String, voucherCode: String?): ApiResult<Order> =
+    override suspend fun checkout(
+        paymentMethod: String,
+        voucherCode: String?,
+        platform: String
+    ): ApiResult<Order> =
         safeApiCall {
             val normalized = normalizePaymentMethod(paymentMethod)
-            val r = remote.checkout(normalized, voucherCode?.takeIf { it.isNotBlank() })
+            val r = remote.checkout(
+                paymentMethod = normalized,
+                voucherCode = voucherCode?.takeIf { it.isNotBlank() },
+                platform = platform
+            )
             if (isOk(r.code)) {
                 val order = r.result.toDomain()
                 local.cacheOrder(order.toEntity())
@@ -42,13 +50,15 @@ class OrderRepositoryImpl(
     override suspend fun checkoutSelected(
         paymentMethod: String,
         itemIds: List<Long>,
-        voucherCode: String?
+        voucherCode: String?,
+        platform: String
     ): ApiResult<Order> =
         safeApiCall {
             val r = remote.checkoutSelected(
                 paymentMethod = normalizePaymentMethod(paymentMethod),
                 itemIds = itemIds,
-                voucherCode = voucherCode?.takeIf { it.isNotBlank() }
+                voucherCode = voucherCode?.takeIf { it.isNotBlank() },
+                platform = platform
             )
             if (isOk(r.code)) {
                 val order = r.result.toDomain()

@@ -16,6 +16,7 @@ import com.uzuu.customer.feature.MainActivity
 import com.uzuu.customer.feature.middle.personal.PersonalFactory
 import com.uzuu.customer.feature.middle.personal.PersonalUiEvent
 import com.uzuu.customer.feature.middle.personal.PersonalViewModel
+import com.uzuu.customer.ui.dialog.showConfirmDialog
 import kotlinx.coroutines.launch
 
 class PersonalInfoFragment : Fragment() {
@@ -57,7 +58,15 @@ class PersonalInfoFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            viewModel.updateInfo(email, fullName, phone, address)
+            showConfirmDialog(
+                title = "Xác nhận cập nhật",
+                message = "Bạn có chắc chắn muốn lưu những thay đổi này?",
+                positiveText = "Lưu",
+                negativeText = "Hủy",
+                onPositive = {
+                    viewModel.updateInfo(email, fullName, phone, address)
+                }
+            )
         }
     }
 

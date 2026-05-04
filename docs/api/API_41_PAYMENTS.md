@@ -12,27 +12,50 @@ Tai lieu nay mo ta luong thanh toan hien tai de team app co the tich hop dung ca
 4. PayOS goi webhook ve backend sau khi nguoi dung thanh toan xong.
 5. Backend cap nhat don sang `PAID` va `CONFIRMED`.
 
+### VietQR flow
+
+1. Frontend goi API checkout trong nhom bookings voi `paymentMethod = VIETQR`.
+2. Backend tao don hang o trang thai `PENDING` va tra ve `paymentUrl` chua QR string (duoc ma hoa).
+3. Frontend giai ma va hien thi QR code cho nguoi dung.
+4. Nguoi dung scan QR code tren app ngan hang va hoan thanh thanh toan.
+5. Webhook tu ngan hang hoac app thanh toan se cap nhat trang thai don sang `PAID`.
+6. Backend cap nhat don sang `CONFIRMED`.
+
 ## Checkout co tra paymentUrl
 
-- POST /bookings/checkout?paymentMethod={paymentMethod}&voucherCode={voucherCode}
-    - Query `paymentMethod`: MOMO | VNPAY | PAYOS
+- POST /bookings/checkout?paymentMethod={paymentMethod}&voucherCode={voucherCode}&platform={platform}
+    - Query `paymentMethod`: MOMO | VNPAY | PAYOS | VIETQR
     - Query `voucherCode`: optional
+    - Query `platform`: optional, mac dinh la `web`, co the la `web` hoac `mobile` de backend biet request tu dau
     - Response: ApiResponse<OrderResponse>
-    - Ghi chu: chi khi `paymentMethod = PAYOS` thi `result.paymentUrl` moi co gia tri.
+    - Ghi chu: chi khi `paymentMethod = PAYOS` hoac `VIETQR` thi `result.paymentUrl` moi co gia tri.
         - PAYOS: paymentUrl la URL cua trang thanh toan PayOS
+        - VIETQR: paymentUrl la QR string (duoc ma hoa), frontend phai giai ma va hien thi
+    - **Ví dụ cho web frontend:** `https://be-event-mng-v3-production.up.railway.app/bookings/checkout?paymentMethod=PAYOS`
+    - **Ví dụ cho mobile app:** `https://be-event-mng-v3-production.up.railway.app/bookings/checkout?paymentMethod=PAYOS&platform=mobile`
 
-- POST /bookings/checkout-selected?paymentMethod={paymentMethod}&voucherCode={voucherCode}
+- POST /bookings/checkout-selected?paymentMethod={paymentMethod}&voucherCode={voucherCode}&platform={platform}
     - Body: List<Long> itemIds
-    - Query `paymentMethod`: MOMO | VNPAY | PAYOS
+    - Query `paymentMethod`: MOMO | VNPAY | PAYOS | VIETQR
     - Query `voucherCode`: optional
+    - Query `platform`: optional, mac dinh la `web`, co the la `web` hoac `mobile` de backend biet request tu dau
     - Response: ApiResponse<OrderResponse>
-    - Ghi chu: chi khi `paymentMethod = PAYOS` thi `result.paymentUrl` moi co gia tri.
+    - Ghi chu: chi khi `paymentMethod = PAYOS` hoac `VIETQR` thi `result.paymentUrl` moi co gia tri.
+    - **Ví dụ cho mobile app:** `https://be-event-mng-v3-production.up.railway.app/bookings/checkout-selected?paymentMethod=PAYOS&platform=mobile`
 
 ## PayOS webhook
 
 - POST /api/v1/payments/payos-webhook
     - Auth: public
     - Body: webhook payload tu PayOS
+    - Response: `200 OK`
+    - Ghi chu: endpoint nay duoc backend dung de nhan callback thong bao giao dich thanh cong.
+
+## VietQR webhook
+
+- POST /api/v1/payments/vietqr-webhook
+    - Auth: public
+    - Body: webhook payload tu ngan hang hoac payment gateway
     - Response: `200 OK`
     - Ghi chu: endpoint nay duoc backend dung de nhan callback thong bao giao dich thanh cong.
 
@@ -57,10 +80,49 @@ Tai lieu nay mo ta luong thanh toan hien tai de team app co the tich hop dung ca
 }
 ```
 
+## Example: OrderResponse khi thanh toan VietQR
+
+```json
+{
+    "code": 1000,
+    "message": null,
+    "result": {
+        "id": "0192837466",
+        "organizerAmount": 187500,
+        "platformFeeRate": 0.25,
+        "serviceFee": 62500,
+        "totalAmount": 250000,
+        "paymentMethod": "VIETQR",
+        "paymentStatus": "PENDING",
+        "orderStatus": "PENDING",
+        "orderDate": "2026-05-02T10:05:00",
+        "paymentUrl": "00020101021238540010A000000727012700069704160413ORDER-ID5802VN5913Company Name6009Ho Chi Minh61080101062208090612345678670360010A0000072703140112345678901520412620000000000VND63041D7C"
+    }
+}
+```
+
+Note: `paymentUrl` trong VietQR response la QR string theo chuan VIETQR. Frontend phai:
+
+1. Giai ma string nay thanh QR code
+2. Hien thi QR code de nguoi dung scan bang ung dung ngan hang
+3. Hoac truyen string nay toi library sinh QR code de hien thi
+
 ## Gia tri can luu y cho frontend
 
 - `paymentUrl`:
     - PAYOS: URL de mo trang thanh toan PayOS.
+    - VIETQR: QR string de hien thi QR code hoac truyen cho library sinh QR code.
 - `paymentStatus`: luc moi tao don la `PENDING`.
 - `orderStatus`: luc moi tao don la `PENDING`.
 - Sau webhook thanh cong, backend se cap nhat don sang `PAID` va `CONFIRMED`.
+
+## Platform Parameter (Moi)
+
+Backend da them parameter `platform` de xac dinh request den tu đâu (web hoac mobile app):
+
+- **Web Frontend**: gui voi `platform=web` hoac khong gui (mac dinh la web)
+    - URL: `https://be-event-mng-v3-production.up.railway.app/bookings/checkout?paymentMethod=PAYOS`
+
+- **Mobile App**: gui voi `platform=mobile`
+    - URL: `https://be-event-mng-v3-production.up.railway.app/bookings/checkout?paymentMethod=PAYOS&platform=mobile`
+    - Dieu nay giup backend xu ly deeplink va redirect dung cach cho tung platform
