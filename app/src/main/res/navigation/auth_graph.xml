@@ -59,7 +59,7 @@
 
         <action
             android:id="@+id/action_login_to_home"
-            app:destination="@id/mainFragment"/>
+                app:destination="@id/mainFragment"/>
 
         <argument
             android:name="usernameStr"
