@@ -1,119 +1,152 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/blue_surface_2"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="52dp"
-        android:text="Đăng kí"
-        android:textSize="40sp"
-        android:layout_marginBottom="40dp"/>
+    android:background="@drawable/bg_auth_screen"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="15dp">
+        android:paddingHorizontal="20dp"
+        android:paddingTop="36dp"
+        android:paddingBottom="24dp">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tạo tài khoản"
+            android:textColor="@color/blue_primary_900"
+            android:textSize="34sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Hoàn tất thông tin để bắt đầu đặt vé nhanh hơn."
+            android:textColor="@color/blue_text_dark"
+            android:textSize="14sp" />
+
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:elevation="6dp"
-            android:backgroundTint="@color/blue_surface_4"
-            app:contentPadding="12dp">
+            android:layout_marginTop="22dp"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="3dp"
+            app:strokeColor="@color/blue_border_2"
+            app:strokeWidth="1dp">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:padding="20dp">
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Tên đăng nhập*">
+                    android:hint="Tên đăng nhập*"
+                    app:boxStrokeColor="@color/blue_primary_400"
+                    app:boxStrokeWidthFocused="2dp">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/edt_username"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        tools:layout_editor_absoluteX="6dp"
-                        tools:layout_editor_absoluteY="206dp" />
+                        android:imeOptions="actionNext"
+                        android:inputType="text" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Mật khẩu*">
+                    android:layout_marginTop="10dp"
+                    android:hint="Mật khẩu*"
+                    app:boxStrokeColor="@color/blue_primary_400"
+                    app:boxStrokeWidthFocused="2dp"
+                    app:endIconMode="password_toggle">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/edt_password"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        tools:layout_editor_absoluteX="6dp"
-                        tools:layout_editor_absoluteY="206dp" />
+                        android:imeOptions="actionNext"
+                        android:inputType="textPassword" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Email*">
+                    android:layout_marginTop="10dp"
+                    android:hint="Email*"
+                    app:boxStrokeColor="@color/blue_primary_400"
+                    app:boxStrokeWidthFocused="2dp">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/edt_email"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        tools:layout_editor_absoluteX="6dp"
-                        tools:layout_editor_absoluteY="206dp" />
+                        android:imeOptions="actionNext"
+                        android:inputType="textEmailAddress" />
                 </com.google.android.material.textfield.TextInputLayout>
+
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Tên hiển thị*">
+                    android:layout_marginTop="10dp"
+                    android:hint="Tên hiển thị*"
+                    app:boxStrokeColor="@color/blue_primary_400"
+                    app:boxStrokeWidthFocused="2dp">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/edt_fullName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        tools:layout_editor_absoluteX="6dp"
-                        tools:layout_editor_absoluteY="206dp" />
+                        android:imeOptions="actionNext"
+                        android:inputType="textPersonName" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Số điện thoại*">
+                    android:layout_marginTop="10dp"
+                    android:hint="Số điện thoại*"
+                    app:boxStrokeColor="@color/blue_primary_400"
+                    app:boxStrokeWidthFocused="2dp">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/edt_phoneNumber"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        tools:layout_editor_absoluteX="6dp"
-                        tools:layout_editor_absoluteY="206dp" />
+                        android:imeOptions="actionNext"
+                        android:inputType="phone" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Địa chỉ*">
+                    android:layout_marginTop="10dp"
+                    android:hint="Địa chỉ*"
+                    app:boxStrokeColor="@color/blue_primary_400"
+                    app:boxStrokeWidthFocused="2dp">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/edt_address"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        tools:layout_editor_absoluteX="6dp"
-                        tools:layout_editor_absoluteY="206dp" />
+                        android:imeOptions="actionDone"
+                        android:inputType="textPostalAddress" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <FrameLayout
@@ -127,10 +160,10 @@
                         android:layout_height="match_parent"
                         android:text="Đăng kí"
                         android:textAllCaps="false"
-                        android:textColor="@android:color/white"
-                        app:backgroundTint="@color/blue_primary_550"
-                        android:textSize="18sp"
-                        app:cornerRadius="8dp"/>
+                        android:textColor="@color/white"
+                        android:textSize="17sp"
+                        app:backgroundTint="@color/blue_primary_600"
+                        app:cornerRadius="14dp" />
 
                     <ProgressBar
                         android:id="@+id/progress"
@@ -138,10 +171,8 @@
                         android:layout_height="28dp"
                         android:layout_gravity="center"
                         android:visibility="gone" />
-
                 </FrameLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
-
-</LinearLayout>
+</androidx.core.widget.NestedScrollView>
