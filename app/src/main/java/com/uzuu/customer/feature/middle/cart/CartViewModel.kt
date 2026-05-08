@@ -126,9 +126,9 @@ class CartViewModel(
             }
 
             if (hasError) {
-                _cartEvent.emit(CartUiEvent.Toast("Co loi khi xoa, vui long thu lai"))
+                _cartEvent.emit(CartUiEvent.Toast("Có lỗi khi xóa, vui lòng thử lại"))
             } else {
-                _cartEvent.emit(CartUiEvent.Toast("Da xoa ${ids.size} muc khoi gio"))
+                _cartEvent.emit(CartUiEvent.Toast("Đã xóa ${ids.size} mục khỏi giỏ"))
             }
         }
     }
@@ -148,7 +148,7 @@ class CartViewModel(
                         )
                     }
                     _cartEvent.emit(CartUiEvent.CartCleared)
-                    _cartEvent.emit(CartUiEvent.Toast("Da xoa toan bo gio hang"))
+                    _cartEvent.emit(CartUiEvent.Toast("Đã xóa toàn bộ giỏ hàng"))
                 }
                 is ApiResult.Error -> {
                     _cartState.update { it.copy(isLoading = false) }
