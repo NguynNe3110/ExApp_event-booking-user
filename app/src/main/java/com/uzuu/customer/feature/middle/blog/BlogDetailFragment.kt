@@ -34,7 +34,6 @@ class BlogDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         bindData()
-        binding.btnBuyNow.setOnClickListener { openBuySheet() }
     }
 
     private fun bindData() {
@@ -54,23 +53,6 @@ class BlogDetailFragment : Fragment() {
             .error(R.drawable.avatar)
             .centerCrop()
             .into(binding.imgThumbnail)
-    }
-
-    private fun openBuySheet() {
-        // Open a minimal bottom sheet asking ticketTypeId and qty, then add to cart.
-        val container = (requireActivity() as MainActivity).container
-        val cartRepo = container.cartRepo
-
-        val sheet = BlogBuyBottomSheet { ticketTypeId, qty ->
-            CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    cartRepo.addToCart(ticketTypeId, qty)
-                } catch (e: Exception) {
-                    // ignore here; sheet shows feedback
-                }
-            }
-        }
-        sheet.show(parentFragmentManager, "blogBuy")
     }
 
     override fun onDestroyView() {
