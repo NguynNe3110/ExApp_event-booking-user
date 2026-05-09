@@ -43,7 +43,7 @@ class HomeViewModel(
                 } catch (e: Exception) {
                     val msg = e.message ?: ""
                     if (msg.contains("401")) {
-                        _homeEvent.emit(HomeUiEvent.Toast("Phien dang nhap het han"))
+                        _homeEvent.emit(HomeUiEvent.Toast("Phiên đăng nhập hết hạn"))
                         _homeEvent.emit(HomeUiEvent.navigateBack)
                     }
                     emptyList<CategoryItem>()
@@ -56,7 +56,7 @@ class HomeViewModel(
                 } catch (e: Exception) {
                     val msg = e.message ?: ""
                     if (msg.contains("401")) {
-                        _homeEvent.emit(HomeUiEvent.Toast("Phien dang nhap het han"))
+                        _homeEvent.emit(HomeUiEvent.Toast("Phiên đăng nhập hết hạn"))
                         _homeEvent.emit(HomeUiEvent.navigateBack)
                     }
                     null
@@ -219,10 +219,10 @@ class HomeViewModel(
             } catch (e: Exception) {
                 val msg = e.message ?: ""
                 if (msg.contains("401")) {
-                    _homeEvent.emit(HomeUiEvent.Toast("Phien dang nhap het han, vui long dang nhap lai"))
+                    _homeEvent.emit(HomeUiEvent.Toast("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại"))
                     _homeEvent.emit(HomeUiEvent.navigateBack)
                 } else {
-                    _homeEvent.emit(HomeUiEvent.Toast(msg.ifBlank { "Khong tai duoc su kien" }))
+                    _homeEvent.emit(HomeUiEvent.Toast(msg.ifBlank { "Không tải được sự kiện" }))
                 }
                 _homeState.update { it.copy(isLoading = false) }
             }

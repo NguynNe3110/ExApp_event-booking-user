@@ -67,6 +67,10 @@ class CategoryEventsFragment : Fragment() {
                 binding.tvEmpty.visibility = View.VISIBLE
             }
         }
+
+        binding.btnBack.setOnClickListener {
+            findNavController().popBackStack()
+        }
     }
 
     private fun showBottomSheet(event: com.uzuu.customer.domain.model.Event) {

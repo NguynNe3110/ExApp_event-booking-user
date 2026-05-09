@@ -7,6 +7,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.core.os.bundleOf
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+import com.uzuu.customer.core.result.ApiResult
+import com.uzuu.customer.feature.MainActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.uzuu.customer.R
@@ -72,9 +77,24 @@ class EventDetailFragment : Fragment() {
         ticketAdapter.submitList(event.ticketTypes)
 
         binding.btnBuyNow.setOnClickListener {
-            val result = Bundle().apply { putParcelable("open_bottom_sheet", event) }
-            parentFragmentManager.setFragmentResult("event_detail_result", result)
-            findNavController().popBackStack()
+            val ticketTypeId = event.ticketTypes.firstOrNull()?.id
+            if (ticketTypeId == null) {
+                findNavController().popBackStack()
+                return@setOnClickListener
+            }
+
+            val cartRepo = (requireActivity() as MainActivity).container.cartRepo
+            lifecycleScope.launch {
+                when (val r = cartRepo.addToCart(ticketTypeId, 1)) {
+                    is ApiResult.Success -> {
+                        val ids = r.data.items.mapNotNull { it.id }.toLongArray()
+                        findNavController().navigate(R.id.checkoutFragment, bundleOf("itemIds" to ids))
+                    }
+                    is ApiResult.Error -> {
+                        android.widget.Toast.makeText(requireContext(), r.message, android.widget.Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
         }
     }
 
