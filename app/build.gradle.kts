@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -5,6 +7,23 @@ plugins {
     //SafeArgs (Kotlin) - Navigation
     id("androidx.navigation.safeargs.kotlin")
     id("kotlin-parcelize")
+}
+
+fun getEnvProperty(key: String, defaultValue: String = ""): String {
+    val envFile = rootProject.file(".env")
+    if (envFile.exists()) {
+        val properties = Properties()
+        envFile.inputStream().use { properties.load(it) }
+        val value = properties.getProperty(key)
+        if (!value.isNullOrBlank()) {
+            return value.trim().removeSurrounding("\"").removeSurrounding("'")
+        }
+    }
+    val systemEnv = System.getenv(key)
+    if (!systemEnv.isNullOrBlank()) {
+        return systemEnv.trim().removeSurrounding("\"").removeSurrounding("'")
+    }
+    return defaultValue
 }
 
 android {
@@ -19,6 +38,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val baseUrl = getEnvProperty("BASE_URL", "https://be-event-mng-v3-production.up.railway.app/")
+        buildConfigField("String", "BASE_URL", "\"$baseUrl\"")
     }
 
     buildTypes {
@@ -40,6 +62,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 

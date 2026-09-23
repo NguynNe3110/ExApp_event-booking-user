@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.uzuu.customer.BuildConfig
 import com.uzuu.customer.databinding.ItemEndHomeBinding
 import com.uzuu.customer.databinding.ItemStartHomeBinding
 import com.uzuu.customer.domain.model.Event
@@ -17,7 +18,7 @@ class EventAdapter(
     companion object {
         private const val TYPE_START = 0
         private const val TYPE_END = 1
-        private const val API_ORIGIN = "https://be-event-mng-v3-production.up.railway.app"
+        private val API_ORIGIN = BuildConfig.BASE_URL.removeSuffix("/")
 
         private val DIFF = object : DiffUtil.ItemCallback<Event>() {
             override fun areItemsTheSame(oldItem: Event, newItem: Event) = oldItem.id == newItem.id
